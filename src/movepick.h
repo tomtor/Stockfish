@@ -57,6 +57,11 @@ struct Stats {
         table[pc][to] +=  v;
   }
 
+  void age() {
+    for (int* p= reinterpret_cast<int*>(table); p < reinterpret_cast<int*>(table) + sizeof(table)/sizeof(int); p++)
+      *p/= 2;
+  }
+
 private:
   T table[PIECE_NB][SQUARE_NB];
 };

@@ -350,6 +350,9 @@ namespace {
 
     TT.new_search();
 
+    History.age();
+    CounterMovesHistory.age();
+
     size_t multiPV = Options["MultiPV"];
     Skill skill(Options["Skill Level"]);
 
