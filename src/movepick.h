@@ -58,8 +58,9 @@ struct Stats {
   }
 
   void age() {
+
     for (int* p= reinterpret_cast<int*>(table); p < reinterpret_cast<int*>(table) + sizeof(table)/sizeof(int); p++)
-      *p/= 2;
+      *p /= 4;
   }
 
 private:
