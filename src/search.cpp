@@ -350,8 +350,8 @@ namespace {
 
     TT.new_search();
 
-    History.age();
-    CounterMovesHistory.age();
+    History.age(4);
+    CounterMovesHistory.age(2);
 
     size_t multiPV = Options["MultiPV"];
     Skill skill(Options["Skill Level"]);

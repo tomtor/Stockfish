@@ -57,10 +57,10 @@ struct Stats {
         table[pc][to] +=  v;
   }
 
-  void age() {
+  void age(int d) {
 
     for (int* p= reinterpret_cast<int*>(table); p < reinterpret_cast<int*>(table) + sizeof(table)/sizeof(int); p++)
-      *p /= 4;
+      *p /= d;
   }
 
 private:
