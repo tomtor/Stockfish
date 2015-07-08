@@ -1421,7 +1421,7 @@ moves_loop: // When in check and at SpNode search starts from here
     // Decrease all the other played quiet moves
     for (int i = 0; i < quietsCnt; ++i)
     {
-        History.update(pos.moved_piece(quiets[i]), to_sq(quiets[i]), -bonus / 2);
+        History.update(pos.moved_piece(quiets[i]), to_sq(quiets[i]), -bonus * 2);
 
         if (is_ok((ss-1)->currentMove))
             cmh.update(pos.moved_piece(quiets[i]), to_sq(quiets[i]), -bonus);
