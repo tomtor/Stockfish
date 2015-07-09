@@ -1410,7 +1410,8 @@ moves_loop: // When in check and at SpNode search starts from here
     Square prevSq = to_sq((ss-1)->currentMove);
     HistoryStats& cmh = CounterMovesHistory[pos.piece_on(prevSq)][prevSq];
 
-    History.update(pos.moved_piece(move), to_sq(move), bonus);
+    if (depth > 5)
+      History.update(pos.moved_piece(move), to_sq(move), bonus);
 
     if (is_ok((ss-1)->currentMove))
     {
@@ -1421,7 +1422,8 @@ moves_loop: // When in check and at SpNode search starts from here
     // Decrease all the other played quiet moves
     for (int i = 0; i < quietsCnt; ++i)
     {
-        History.update(pos.moved_piece(quiets[i]), to_sq(quiets[i]), -bonus);
+        if (depth > 5)
+          History.update(pos.moved_piece(quiets[i]), to_sq(quiets[i]), -bonus);
 
         if (is_ok((ss-1)->currentMove))
             cmh.update(pos.moved_piece(quiets[i]), to_sq(quiets[i]), -bonus);
