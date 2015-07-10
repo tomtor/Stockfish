@@ -119,6 +119,7 @@ struct Thread : public ThreadBase {
              Depth depth, int moveCount, MovePicker* movePicker, int nodeType, bool cutNode);
 
   SplitPoint splitPoints[MAX_SPLITPOINTS_PER_THREAD];
+  HistoryStats History;
   Pawns::Table pawnsTable;
   Material::Table materialTable;
   Endgames endgames;

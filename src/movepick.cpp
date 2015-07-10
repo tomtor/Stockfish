@@ -159,7 +159,7 @@ void MovePicker::score<QUIETS>() {
   const HistoryStats& cmh = counterMovesHistory[pos.piece_on(prevSq)][prevSq];
 
   for (auto& m : *this)
-      m.value =  history[pos.moved_piece(m)][to_sq(m)]
+      m.value =  Value(history[pos.moved_piece(m)][to_sq(m)])
                + cmh[pos.moved_piece(m)][to_sq(m)] * 3;
 }
 
@@ -178,7 +178,7 @@ void MovePicker::score<EVASIONS>() {
           m.value =  PieceValue[MG][pos.piece_on(to_sq(m))]
                    - Value(type_of(pos.moved_piece(m))) + HistoryStats::Max;
       else
-          m.value = history[pos.moved_piece(m)][to_sq(m)];
+          m.value = Value(history[pos.moved_piece(m)][to_sq(m)]);
 }
 
 

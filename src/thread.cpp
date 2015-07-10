@@ -174,12 +174,13 @@ void Thread::split(Position& pos, Stack* ss, Value alpha, Value beta, Value* bes
   while (    sp.slavesMask.count() < MAX_SLAVES_PER_SPLITPOINT
          && (slave = Threads.available_slave(&sp)) != nullptr)
   {
-     slave->spinlock.acquire();
+      slave->spinlock.acquire();
 
       if (slave->can_join(activeSplitPoint))
       {
           activeSplitPoint->slavesMask.set(slave->idx);
           slave->activeSplitPoint = activeSplitPoint;
+          //std::memcpy(&slave->History, &this->History, sizeof(this->History));
           slave->searching = true;
       }
 
