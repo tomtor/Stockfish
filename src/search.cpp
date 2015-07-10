@@ -185,8 +185,8 @@ void Search::init() {
 void Search::reset () {
 
   TT.clear();
-  if (RootPos.this_thread())
-    RootPos.this_thread()->History.clear();
+  for (Thread* th : Threads)
+    th->History.clear();
   CounterMovesHistory.clear();
   Countermoves.clear();
 }
