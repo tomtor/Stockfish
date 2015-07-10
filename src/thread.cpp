@@ -180,7 +180,7 @@ void Thread::split(Position& pos, Stack* ss, Value alpha, Value beta, Value* bes
       {
           activeSplitPoint->slavesMask.set(slave->idx);
           slave->activeSplitPoint = activeSplitPoint;
-          //std::memcpy(&slave->History, &this->History, sizeof(this->History));
+          std::memcpy(&slave->History, &this->History, sizeof(this->History));
           slave->searching = true;
       }
 
