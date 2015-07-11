@@ -164,8 +164,10 @@ void Thread::split(Position& pos, Stack* ss, Value alpha, Value beta, Value* bes
   sp.ss = ss;
   sp.allSlavesSearching = true; // Must be set under lock protection
 
-  if (activeSplitPoint)
+  if (activeSplitPoint) {
     std::memcpy(&sp.History, &activeSplitPoint->History, sizeof(sp.History));
+    std::memcpy(&sp.Countermoves, &activeSplitPoint->Countermoves, sizeof(sp.Countermoves));
+  }
 
   ++splitPointsSize;
   activeSplitPoint = &sp;

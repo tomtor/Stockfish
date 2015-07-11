@@ -134,7 +134,7 @@ namespace {
   Value DrawValue[COLOR_NB];
   //HistoryStats History;
   CounterMovesHistoryStats CounterMovesHistory;
-  MovesStats Countermoves;
+  //MovesStats Countermoves;
 
   template <NodeType NT, bool SpNode>
   Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, bool cutNode);
@@ -186,10 +186,11 @@ void Search::reset () {
 
   TT.clear();
   for (Thread* th : Threads)
-    for (auto& sp : th->splitPoints)
+    for (auto& sp : th->splitPoints) {
       sp.History.clear();
+      sp.Countermoves.clear();
+    }
   CounterMovesHistory.clear();
-  Countermoves.clear();
 }
 
 
@@ -784,7 +785,7 @@ namespace {
 moves_loop: // When in check and at SpNode search starts from here
 
     Square prevMoveSq = to_sq((ss-1)->currentMove);
-    Move countermove = Countermoves[pos.piece_on(prevMoveSq)][prevMoveSq];
+    Move countermove = thisThread->counterMoves()[pos.piece_on(prevMoveSq)][prevMoveSq];
 
     MovePicker mp(pos, ttMove, depth, thisThread->history(), CounterMovesHistory, countermove, ss);
     CheckInfo ci(pos);
@@ -1416,7 +1417,7 @@ moves_loop: // When in check and at SpNode search starts from here
 
     if (is_ok((ss-1)->currentMove))
     {
-        Countermoves.update(pos.piece_on(prevSq), prevSq, move);
+        pos.this_thread()->counterMoves().update(pos.piece_on(prevSq), prevSq, move);
         cmh.update(pos.moved_piece(move), to_sq(move), bonus);
     }
 
