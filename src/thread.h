@@ -69,6 +69,8 @@ struct SplitPoint {
   int nodeType;
   bool cutNode;
 
+  HistoryStats History;
+
   // Const pointers to shared data
   MovePicker* movePicker;
   SplitPoint* parentSplitPoint;
@@ -118,8 +120,10 @@ struct Thread : public ThreadBase {
   void split(Position& pos, Search::Stack* ss, Value alpha, Value beta, Value* bestValue, Move* bestMove,
              Depth depth, int moveCount, MovePicker* movePicker, int nodeType, bool cutNode);
 
+  HistoryStats& history() {
+    return activeSplitPoint ? activeSplitPoint->History : splitPoints[0].History;
+  }
   SplitPoint splitPoints[MAX_SPLITPOINTS_PER_THREAD];
-  HistoryStats History;
   Pawns::Table pawnsTable;
   Material::Table materialTable;
   Endgames endgames;
