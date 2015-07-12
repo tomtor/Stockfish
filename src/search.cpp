@@ -42,7 +42,6 @@ namespace Search {
   RootMoveVector RootMoves;
   Position RootPos;
   StateStackPtr SetupStates;
-  Depth IterDepth;
 }
 
 namespace Tablebases {
@@ -389,7 +388,6 @@ namespace {
             // high/low anymore.
             while (true)
             {
-        	IterDepth = depth;
                 bestValue = search<Root, false>(pos, ss, alpha, beta, depth, false);
 
                 // Bring the best move to the front. It is critical that sorting

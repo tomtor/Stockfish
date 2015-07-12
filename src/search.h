@@ -103,7 +103,6 @@ extern LimitsType Limits;
 extern RootMoveVector RootMoves;
 extern Position RootPos;
 extern StateStackPtr SetupStates;
-extern Depth IterDepth;
 
 void init();
 void think();
