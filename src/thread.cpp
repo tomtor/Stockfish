@@ -165,7 +165,8 @@ void Thread::split(Position& pos, Stack* ss, Value alpha, Value beta, Value* bes
   sp.allSlavesSearching = true; // Must be set under lock protection
 
   if (activeSplitPoint) {
-    if (depth < IterDepth / 2) {
+    //if (depth < IterDepth / 2) {
+    if (depth > Threads.minimumSplitDepth + ONE_PLY) {
       std::memcpy(&sp.History, &activeSplitPoint->History, sizeof(sp.History));
       std::memcpy(&sp.Countermoves, &activeSplitPoint->Countermoves, sizeof(sp.Countermoves));
       sp.activeH= &sp.History;
