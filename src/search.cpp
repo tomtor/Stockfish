@@ -42,6 +42,7 @@ namespace Search {
   RootMoveVector RootMoves;
   Position RootPos;
   StateStackPtr SetupStates;
+  Depth IterDepth;
 }
 
 namespace Tablebases {
@@ -132,9 +133,7 @@ namespace {
   EasyMoveManager EasyMove;
   double BestMoveChanges;
   Value DrawValue[COLOR_NB];
-  //HistoryStats History;
   CounterMovesHistoryStats CounterMovesHistory;
-  //MovesStats Countermoves;
 
   template <NodeType NT, bool SpNode>
   Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, bool cutNode);
@@ -390,6 +389,7 @@ namespace {
             // high/low anymore.
             while (true)
             {
+        	IterDepth = depth;
                 bestValue = search<Root, false>(pos, ss, alpha, beta, depth, false);
 
                 // Bring the best move to the front. It is critical that sorting

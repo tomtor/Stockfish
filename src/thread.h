@@ -69,9 +69,6 @@ struct SplitPoint {
   int nodeType;
   bool cutNode;
 
-  HistoryStats History;
-  MovesStats Countermoves;
-
   // Const pointers to shared data
   MovePicker* movePicker;
   SplitPoint* parentSplitPoint;
@@ -86,6 +83,11 @@ struct SplitPoint {
   volatile Move bestMove;
   volatile int moveCount;
   volatile bool cutoff;
+
+  HistoryStats *activeH;
+  MovesStats *activeC;
+  HistoryStats History;
+  MovesStats Countermoves;
 };
 
 
@@ -122,10 +124,10 @@ struct Thread : public ThreadBase {
              Depth depth, int moveCount, MovePicker* movePicker, int nodeType, bool cutNode);
 
   HistoryStats& history() {
-    return activeSplitPoint ? activeSplitPoint->History : splitPoints[0].History;
+    return activeSplitPoint ? *(activeSplitPoint->activeH) : splitPoints[0].History;
   }
   MovesStats& counterMoves() {
-      return activeSplitPoint ? activeSplitPoint->Countermoves : splitPoints[0].Countermoves;
+    return activeSplitPoint ? *(activeSplitPoint->activeC) : splitPoints[0].Countermoves;
   }
   SplitPoint splitPoints[MAX_SPLITPOINTS_PER_THREAD];
   Pawns::Table pawnsTable;
