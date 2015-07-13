@@ -1610,6 +1610,15 @@ void Thread::idle_loop() {
           std::memcpy(ss-2, sp->ss-2, 5 * sizeof(Stack));
           ss->splitPoint = sp;
 
+          HistoryStats history;
+
+          // Detach history table at low depths
+          if (sp->depth <= Threads.minimumSplitDepth + ONE_PLY)
+          {
+              std::memcpy(&history, sp->history, sizeof(History));
+              sp->history = &history;
+          }
+
           sp->spinlock.acquire();
 
           assert(activePosition == nullptr);
