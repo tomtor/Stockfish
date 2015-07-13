@@ -134,7 +134,7 @@ bool Thread::can_join(const SplitPoint* sp) const {
 
 void Thread::split(Position& pos, Stack* ss, Value alpha, Value beta, Value* bestValue,
                    Move* bestMove, Depth depth, int moveCount,
-                   MovePicker* movePicker, int nodeType, bool cutNode) {
+                   MovePicker* movePicker, int nodeType, bool cutNode, HistoryStats* history) {
 
   assert(searching);
   assert(-VALUE_INFINITE < *bestValue && *bestValue <= alpha && alpha < beta && beta <= VALUE_INFINITE);
@@ -148,6 +148,7 @@ void Thread::split(Position& pos, Stack* ss, Value alpha, Value beta, Value* bes
 
   sp.master = this;
   sp.parentSplitPoint = activeSplitPoint;
+  sp.history = history;
   sp.slavesMask = 0, sp.slavesMask.set(idx);
   sp.depth = depth;
   sp.bestValue = *bestValue;

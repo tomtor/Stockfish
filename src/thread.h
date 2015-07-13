@@ -72,6 +72,7 @@ struct SplitPoint {
   // Const pointers to shared data
   MovePicker* movePicker;
   SplitPoint* parentSplitPoint;
+  HistoryStats* history;
 
   // Shared variable data
   Spinlock spinlock;
@@ -116,7 +117,7 @@ struct Thread : public ThreadBase {
   bool can_join(const SplitPoint* sp) const;
 
   void split(Position& pos, Search::Stack* ss, Value alpha, Value beta, Value* bestValue, Move* bestMove,
-             Depth depth, int moveCount, MovePicker* movePicker, int nodeType, bool cutNode);
+             Depth depth, int moveCount, MovePicker* movePicker, int nodeType, bool cutNode, HistoryStats* history);
 
   SplitPoint splitPoints[MAX_SPLITPOINTS_PER_THREAD];
   Pawns::Table pawnsTable;

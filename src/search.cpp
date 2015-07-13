@@ -146,7 +146,8 @@ namespace {
   Value value_to_tt(Value v, int ply);
   Value value_from_tt(Value v, int ply);
   void update_pv(Move* pv, Move move, Move* childPv);
-  void update_stats(const Position& pos, Stack* ss, Move move, Depth depth, Move* quiets, int quietsCnt);
+  void update_stats(HistoryStats& history, const Position& pos, Stack* ss, Move move,
+                    Depth depth, Move* quiets, int quietsCnt);
 
 } // namespace
 
@@ -536,6 +537,7 @@ namespace {
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
+    HistoryStats& history = thisThread->activeSplitPoint ? *thisThread->activeSplitPoint->history : History;
     inCheck = pos.checkers();
 
     if (SpNode)
@@ -606,7 +608,7 @@ namespace {
 
         // If ttMove is quiet, update killers, history, counter move on TT hit
         if (ttValue >= beta && ttMove && !pos.capture_or_promotion(ttMove))
-            update_stats(pos, ss, ttMove, depth, nullptr, 0);
+            update_stats(history, pos, ss, ttMove, depth, nullptr, 0);
 
         return ttValue;
     }
@@ -749,7 +751,7 @@ namespace {
         assert((ss-1)->currentMove != MOVE_NONE);
         assert((ss-1)->currentMove != MOVE_NULL);
 
-        MovePicker mp(pos, ttMove, History, CounterMovesHistory, pos.captured_piece_type());
+        MovePicker mp(pos, ttMove, history, CounterMovesHistory, pos.captured_piece_type());
         CheckInfo ci(pos);
 
         while ((move = mp.next_move<false>()) != MOVE_NONE)
@@ -783,7 +785,7 @@ moves_loop: // When in check and at SpNode search starts from here
     Square prevMoveSq = to_sq((ss-1)->currentMove);
     Move countermove = Countermoves[pos.piece_on(prevMoveSq)][prevMoveSq];
 
-    MovePicker mp(pos, ttMove, depth, History, CounterMovesHistory, countermove, ss);
+    MovePicker mp(pos, ttMove, depth, history, CounterMovesHistory, countermove, ss);
     CheckInfo ci(pos);
     value = bestValue; // Workaround a bogus 'uninitialized' warning under gcc
     improving =   ss->staticEval >= (ss-2)->staticEval
@@ -953,13 +955,13 @@ moves_loop: // When in check and at SpNode search starts from here
           ss->reduction = reduction<PvNode>(improving, depth, moveCount);
 
           if (   (!PvNode && cutNode)
-              || (   History[pos.piece_on(to_sq(move))][to_sq(move)] < VALUE_ZERO
+              || (   history[pos.piece_on(to_sq(move))][to_sq(move)] < VALUE_ZERO
                   && CounterMovesHistory[pos.piece_on(prevMoveSq)][prevMoveSq]
                                         [pos.piece_on(to_sq(move))][to_sq(move)] <= VALUE_ZERO))
               ss->reduction += ONE_PLY;
 
           if (    move == countermove
-              || (   History[pos.piece_on(to_sq(move))][to_sq(move)] > VALUE_ZERO
+              || (   history[pos.piece_on(to_sq(move))][to_sq(move)] > VALUE_ZERO
                   && CounterMovesHistory[pos.piece_on(prevMoveSq)][prevMoveSq]
                                         [pos.piece_on(to_sq(move))][to_sq(move)] > VALUE_ZERO))
               ss->reduction = std::max(DEPTH_ZERO, ss->reduction - ONE_PLY);
@@ -1103,7 +1105,7 @@ moves_loop: // When in check and at SpNode search starts from here
           assert(bestValue > -VALUE_INFINITE && bestValue < beta);
 
           thisThread->split(pos, ss, alpha, beta, &bestValue, &bestMove,
-                            depth, moveCount, &mp, NT, cutNode);
+                            depth, moveCount, &mp, NT, cutNode, &history);
 
           if (Signals.stop || thisThread->cutoff_occurred())
               return VALUE_ZERO;
@@ -1134,7 +1136,7 @@ moves_loop: // When in check and at SpNode search starts from here
 
     // Quiet best move: update killers, history and countermoves
     else if (bestMove && !pos.capture_or_promotion(bestMove))
-        update_stats(pos, ss, bestMove, depth, quietsSearched, quietCount);
+        update_stats(history, pos, ss, bestMove, depth, quietsSearched, quietCount);
 
     tte->save(posKey, value_to_tt(bestValue, ss->ply),
               bestValue >= beta ? BOUND_LOWER :
@@ -1395,7 +1397,7 @@ moves_loop: // When in check and at SpNode search starts from here
   // update_stats() updates killers, history, countermove history and
   // countermoves stats for a quiet best move.
 
-  void update_stats(const Position& pos, Stack* ss, Move move,
+  void update_stats(HistoryStats& history, const Position& pos, Stack* ss, Move move,
                     Depth depth, Move* quiets, int quietsCnt) {
 
     if (ss->killers[0] != move)
@@ -1409,7 +1411,7 @@ moves_loop: // When in check and at SpNode search starts from here
     Square prevSq = to_sq((ss-1)->currentMove);
     HistoryStats& cmh = CounterMovesHistory[pos.piece_on(prevSq)][prevSq];
 
-    History.update(pos.moved_piece(move), to_sq(move), bonus);
+    history.update(pos.moved_piece(move), to_sq(move), bonus);
 
     if (is_ok((ss-1)->currentMove))
     {
@@ -1420,7 +1422,7 @@ moves_loop: // When in check and at SpNode search starts from here
     // Decrease all the other played quiet moves
     for (int i = 0; i < quietsCnt; ++i)
     {
-        History.update(pos.moved_piece(quiets[i]), to_sq(quiets[i]), -bonus);
+        history.update(pos.moved_piece(quiets[i]), to_sq(quiets[i]), -bonus);
 
         if (is_ok((ss-1)->currentMove))
             cmh.update(pos.moved_piece(quiets[i]), to_sq(quiets[i]), -bonus);
