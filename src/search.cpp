@@ -1612,8 +1612,8 @@ void Thread::idle_loop() {
 
           HistoryStats history;
 
-          // Detach history table at low depths
-          if (sp->depth <= Threads.minimumSplitDepth + ONE_PLY)
+          // Detach history table every 7 plies
+          if ((sp->depth / ONE_PLY) % 7 == 0)
           {
               std::memcpy(&history, sp->history, sizeof(History));
               sp->history = &history;
