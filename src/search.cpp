@@ -1613,7 +1613,7 @@ void Thread::idle_loop() {
           HistoryStats history;
 
           // Detach history table at low depths
-          if (sp->depth == 8)
+          if (sp->depth == Threads.minimumSplitDepth)
           {
               std::memcpy(&history, sp->history, sizeof(History));
               sp->history = &history;
