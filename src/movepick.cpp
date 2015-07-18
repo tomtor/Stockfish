@@ -156,11 +156,11 @@ template<>
 void MovePicker::score<QUIETS>() {
 
   Square prevSq = to_sq((ss-1)->currentMove);
-  const HistoryStats& cmh = counterMovesHistory[pos.piece_on(prevSq)][prevSq];
+  const HistoryStats& cmh = counterMovesHistory(pos, pos.piece_on(prevSq))[prevSq];
 
   for (auto& m : *this)
-      m.value =  history[pos.moved_piece(m)][to_sq(m)]
-               + cmh[pos.moved_piece(m)][to_sq(m)] * 3;
+      m.value =  history(pos, pos.moved_piece(m))[to_sq(m)]
+               + cmh(pos, pos.moved_piece(m))[to_sq(m)] * 3;
 }
 
 template<>
@@ -178,7 +178,7 @@ void MovePicker::score<EVASIONS>() {
           m.value =  PieceValue[MG][pos.piece_on(to_sq(m))]
                    - Value(type_of(pos.moved_piece(m))) + HistoryStats::Max;
       else
-          m.value = history[pos.moved_piece(m)][to_sq(m)];
+          m.value = history(pos, pos.moved_piece(m))[to_sq(m)];
 }
 
 

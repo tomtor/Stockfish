@@ -40,25 +40,26 @@ template<typename T>
 struct Stats {
 
   static const Value Max = Value(250);
+  static const int HashSize = 4;
 
-  const T* operator[](Piece pc) const { return table[pc]; }
-  T* operator[](Piece pc) { return table[pc]; }
+  const T* operator()(const Position &p, Piece pc) const { return table[p.material_key() & (HashSize-1)][pc]; }
+  T* operator()(const Position &p, Piece pc) { return table[p.material_key() & (HashSize-1)][pc]; }
   void clear() { std::memset(table, 0, sizeof(table)); }
 
-  void update(Piece pc, Square to, Move m) {
+  void update(const Position &p, Piece pc, Square to, Move m) {
 
-    if (m != table[pc][to])
-        table[pc][to] = m;
+    if (m != table[p.material_key() & (HashSize-1)][pc][to])
+        table[p.material_key() & (HashSize-1)][pc][to] = m;
   }
 
-  void update(Piece pc, Square to, Value v) {
+  void update(const Position &p, Piece pc, Square to, Value v) {
 
-    if (abs(table[pc][to] + v) < Max)
-        table[pc][to] += v;
+    if (abs(table[p.material_key() & (HashSize-1)][pc][to] + v) < Max)
+        table[p.material_key() & (HashSize-1)][pc][to] += v;
   }
 
 private:
-  T table[PIECE_NB][SQUARE_NB];
+  T table[HashSize][PIECE_NB][SQUARE_NB];
 };
 
 typedef Stats<Value> HistoryStats;

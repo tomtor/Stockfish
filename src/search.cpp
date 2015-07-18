@@ -781,7 +781,7 @@ namespace {
 moves_loop: // When in check and at SpNode search starts from here
 
     Square prevMoveSq = to_sq((ss-1)->currentMove);
-    Move countermove = Countermoves[pos.piece_on(prevMoveSq)][prevMoveSq];
+    Move countermove = Countermoves(pos, pos.piece_on(prevMoveSq))[prevMoveSq];
 
     MovePicker mp(pos, ttMove, depth, History, CounterMovesHistory, countermove, ss);
     CheckInfo ci(pos);
@@ -953,14 +953,14 @@ moves_loop: // When in check and at SpNode search starts from here
           ss->reduction = reduction<PvNode>(improving, depth, moveCount);
 
           if (   (!PvNode && cutNode)
-              || (   History[pos.piece_on(to_sq(move))][to_sq(move)] < VALUE_ZERO
-                  && CounterMovesHistory[pos.piece_on(prevMoveSq)][prevMoveSq]
-                                        [pos.piece_on(to_sq(move))][to_sq(move)] <= VALUE_ZERO))
+              || (   History(pos, pos.piece_on(to_sq(move)))[to_sq(move)] < VALUE_ZERO
+                  && CounterMovesHistory(pos, pos.piece_on(prevMoveSq))[prevMoveSq]
+                                        (pos, pos.piece_on(to_sq(move)))[to_sq(move)] <= VALUE_ZERO))
               ss->reduction += ONE_PLY;
 
-          if (   History[pos.piece_on(to_sq(move))][to_sq(move)] > VALUE_ZERO
-              && CounterMovesHistory[pos.piece_on(prevMoveSq)][prevMoveSq]
-                                    [pos.piece_on(to_sq(move))][to_sq(move)] > VALUE_ZERO)
+          if (   History(pos, pos.piece_on(to_sq(move)))[to_sq(move)] > VALUE_ZERO
+              && CounterMovesHistory(pos, pos.piece_on(prevMoveSq))[prevMoveSq]
+                                    (pos, pos.piece_on(to_sq(move)))[to_sq(move)] > VALUE_ZERO)
               ss->reduction = std::max(DEPTH_ZERO, ss->reduction - ONE_PLY);
 
           // Decrease reduction for moves that escape a capture
@@ -1406,31 +1406,31 @@ moves_loop: // When in check and at SpNode search starts from here
     Value bonus = Value((depth / ONE_PLY) * (depth / ONE_PLY));
 
     Square prevSq = to_sq((ss-1)->currentMove);
-    HistoryStats& cmh = CounterMovesHistory[pos.piece_on(prevSq)][prevSq];
+    HistoryStats& cmh = CounterMovesHistory(pos, pos.piece_on(prevSq))[prevSq];
 
-    History.update(pos.moved_piece(move), to_sq(move), bonus);
+    History.update(pos, pos.moved_piece(move), to_sq(move), bonus);
 
     if (is_ok((ss-1)->currentMove))
     {
-        Countermoves.update(pos.piece_on(prevSq), prevSq, move);
-        cmh.update(pos.moved_piece(move), to_sq(move), bonus);
+        Countermoves.update(pos, pos.piece_on(prevSq), prevSq, move);
+        cmh.update(pos, pos.moved_piece(move), to_sq(move), bonus);
     }
 
     // Decrease all the other played quiet moves
     for (int i = 0; i < quietsCnt; ++i)
     {
-        History.update(pos.moved_piece(quiets[i]), to_sq(quiets[i]), -bonus);
+        History.update(pos, pos.moved_piece(quiets[i]), to_sq(quiets[i]), -bonus);
 
         if (is_ok((ss-1)->currentMove))
-            cmh.update(pos.moved_piece(quiets[i]), to_sq(quiets[i]), -bonus);
+            cmh.update(pos, pos.moved_piece(quiets[i]), to_sq(quiets[i]), -bonus);
     }
 
     // Extra penalty for TT move in previous ply when it gets refuted
     if (is_ok((ss-2)->currentMove) && (ss-1)->currentMove == (ss-1)->ttMove && !pos.captured_piece_type())
     {
         Square prevPrevSq = to_sq((ss-2)->currentMove);
-        HistoryStats& ttMoveCmh = CounterMovesHistory[pos.piece_on(prevPrevSq)][prevPrevSq];
-        ttMoveCmh.update(pos.piece_on(prevSq), prevSq, -bonus - 2 * depth / ONE_PLY - 1);
+        HistoryStats& ttMoveCmh = CounterMovesHistory(pos, pos.piece_on(prevPrevSq))[prevPrevSq];
+        ttMoveCmh.update(pos, pos.piece_on(prevSq), prevSq, -bonus - 2 * depth / ONE_PLY - 1);
     }
   }
 
