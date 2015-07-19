@@ -970,6 +970,11 @@ moves_loop: // When in check and at SpNode search starts from here
               && pos.see(make_move(to_sq(move), from_sq(move))) < VALUE_ZERO)
               ss->reduction = std::max(DEPTH_ZERO, ss->reduction - ONE_PLY);
 
+          // Decrease reduction in the endgame
+          if (    ss->reduction
+        	  && !pos.non_pawn_material(pos.side_to_move())
+              ss->reduction = std::max(DEPTH_ZERO, ss->reduction - ONE_PLY);
+
           Depth d = std::max(newDepth - ss->reduction, ONE_PLY);
           if (SpNode)
               alpha = splitPoint->alpha;
