@@ -945,7 +945,7 @@ moves_loop: // When in check and at SpNode search starts from here
       // Step 15. Reduced depth search (LMR). If the move fails high it will be
       // re-searched at full depth.
       if (    depth >= 3 * ONE_PLY
-          &&  moveCount > (pos.non_pawn_material(pos.side_to_move()) ? 1 : 10)
+          &&  moveCount > 1
           && !captureOrPromotion
           &&  move != ss->killers[0]
           &&  move != ss->killers[1])
