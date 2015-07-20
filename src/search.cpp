@@ -972,7 +972,7 @@ moves_loop: // When in check and at SpNode search starts from here
 
           // Decrease reduction in the endgame
           else if (    ss->reduction
-              && (pos.non_pawn_material(WHITE) + pos.non_pawn_material(BLACK) <= BishopValueEg))
+              && (pos.non_pawn_material(WHITE) + pos.non_pawn_material(BLACK) <= KnightValueEg))
               ss->reduction = std::max(DEPTH_ZERO, ss->reduction - ONE_PLY);
 
           Depth d = std::max(newDepth - ss->reduction, ONE_PLY);
