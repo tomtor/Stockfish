@@ -552,8 +552,7 @@ namespace {
   Score evaluate_passed_pawns(const Position& pos, const EvalInfo& ei) {
 
     const Color Them = (Us == WHITE ? BLACK : WHITE);
-    const bool RRQ = (pos.non_pawn_material(WHITE) + pos.non_pawn_material(BLACK)
-                      == 2 * RookValueMg + QueenValueMg);
+    const bool RRQ = (pos.non_pawn_material(Us) == 2 * RookValueMg && pos.non_pawn_material(Them) == QueenValueMg);
 
     Bitboard b, squaresToQueen, defendedSquares, unsafeSquares;
     Score score = SCORE_ZERO;
@@ -566,7 +565,7 @@ namespace {
 
         assert(pos.pawn_passed(Us, s));
 
-        int r = relative_rank(Us, s) - RANK_2 + int(RRQ && pos.non_pawn_material(Us) == 2 * RookValueMg);
+        int r = relative_rank(Us, s) - RANK_2 + int(RRQ);
         int rr = r * (r - 1);
 
         // Base bonus based on rank
