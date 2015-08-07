@@ -569,7 +569,7 @@ namespace {
         int rr = r * (r - 1);
 
         // Base bonus based on rank
-        Value mbonus = Value(17 * rr), ebonus = Value((RRQ ? 10: 7) * (rr + r + 1));
+        Value mbonus = Value(17 * rr), ebonus = Value((RRQ ? 11: 7) * (rr + r + 1));
 
         if (rr)
         {
