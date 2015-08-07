@@ -565,11 +565,11 @@ namespace {
 
         assert(pos.pawn_passed(Us, s));
 
-        int r = relative_rank(Us, s) - RANK_2 + int(RRQ);
+        int r = relative_rank(Us, s) - RANK_2;
         int rr = r * (r - 1);
 
         // Base bonus based on rank
-        Value mbonus = Value(17 * rr), ebonus = Value(7 * (rr + r + 1));
+        Value mbonus = Value(17 * rr), ebonus = Value((RRQ ? 10: 7) * (rr + r + 1));
 
         if (rr)
         {
