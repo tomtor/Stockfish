@@ -566,7 +566,7 @@ namespace {
 
         assert(pos.pawn_passed(Us, s));
 
-        int r = relative_rank(Us, s) - RANK_2 + int(RRQ);
+        int r = relative_rank(Us, s) - RANK_2 + int(RRQ && pos.non_pawn_material(Us) == 2 * RookValueMg);
         int rr = r * (r - 1);
 
         // Base bonus based on rank
