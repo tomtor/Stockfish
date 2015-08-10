@@ -157,6 +157,8 @@ namespace {
     V(7), V(14), V(37), V(63), V(134), V(189)
   };
 
+  const Score RRQPassedPawnBonus = S( 0, 16);
+
   const Score ThreatenedByHangingPawn = S(40, 60);
 
   // Assorted bonuses and penalties used by evaluation
@@ -632,6 +634,11 @@ namespace {
 
         score += make_score(mbonus, ebonus);
     }
+
+    if (   score != SCORE_ZERO
+        && pos.non_pawn_material(Us) == 2 * RookValueMg
+        && pos.non_pawn_material(Them) == QueenValueMg)
+        score += RRQPassedPawnBonus;
 
     if (Trace)
         Tracing::write(Tracing::PASSED, Us, score * Weights[PassedPawns]);
