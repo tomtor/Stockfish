@@ -157,9 +157,9 @@ namespace {
     V(7), V(14), V(37), V(63), V(134), V(189)
   };
 
-  int ScaleRRQ = 83;
+  Value RRQPassedPawnBonus = S( 0, 30);
 
-  TUNE(ScaleRRQ);
+  TUNE(RRQPassedPawnBonus);
 
   const Score ThreatenedByHangingPawn = S(40, 60);
 
@@ -568,8 +568,6 @@ namespace {
 
     const Color Them = (Us == WHITE ? BLACK : WHITE);
 
-    const bool RRQ = (pos.non_pawn_material(Us) == 2 * RookValueMg && pos.non_pawn_material(Them) == QueenValueMg);
-
     Bitboard b, squaresToQueen, defendedSquares, unsafeSquares;
     Score score = SCORE_ZERO;
 
@@ -587,9 +585,6 @@ namespace {
         // Base bonus based on rank
         Value mbonus = PassedPawnsBonusMg[r],
               ebonus = PassedPawnsBonusEg[r];
-
-        if (RRQ)
-            ebonus = ebonus * ScaleRRQ / 64;
 
         if (rr)
         {
@@ -642,6 +637,11 @@ namespace {
 
         score += make_score(mbonus, ebonus);
     }
+
+    if (   score
+        && pos.non_pawn_material(Us) == 2 * RookValueMg
+        && pos.non_pawn_material(Them) == QueenValueMg)
+    	score += RRQPassedPawnBonus;
 
     if (Trace)
         Tracing::write(Tracing::PASSED, Us, score * Weights[PassedPawns]);
