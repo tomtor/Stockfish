@@ -157,7 +157,7 @@ namespace {
     V(7), V(14), V(37), V(63), V(134), V(189)
   };
 
-  Value RRQPassedPawnBonus = S( 0, 30);
+  score RRQPassedPawnBonus = S( 0, 30);
 
   TUNE(RRQPassedPawnBonus);
 
