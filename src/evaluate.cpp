@@ -157,7 +157,7 @@ namespace {
     V(7), V(14), V(37), V(63), V(134), V(189)
   };
 
-  const Score RRQPassedPawnBonus = S( 0, 16);
+  const Score RRQPassedPawnBonus = S( 0, 15);
 
   const Score ThreatenedByHangingPawn = S(40, 60);
 
