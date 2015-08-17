@@ -115,7 +115,9 @@ namespace {
 
 namespace Material {
 
-const int BishopPairBonus = 100;
+int BishopPairBonus = 100;
+
+TUNE(BishopPairBonus);
 
 /// Material::probe() looks up the current position's material configuration in
 /// the material hash table. It returns a pointer to the Entry if the position
@@ -213,7 +215,7 @@ Entry* probe(const Position& pos) {
   if (pos.count<PAWN>(BLACK) == 1 && npm_b - npm_w <= BishopValueMg)
       e->factor[BLACK] = (uint8_t) SCALE_FACTOR_ONEPAWN;
 
-  e->value = // pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK) +
+  e->value =
       ((pos.count<BISHOP>(WHITE) > 1) - (pos.count<BISHOP>(BLACK) > 1)) * BishopPairBonus;
 
   return e;
