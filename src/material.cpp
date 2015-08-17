@@ -115,7 +115,7 @@ namespace {
 
 namespace Material {
 
-const Score BishopPairBonus = make_score(100, 100);
+const int BishopPairBonus = 100;
 
 /// Material::probe() looks up the current position's material configuration in
 /// the material hash table. It returns a pointer to the Entry if the position
