@@ -213,8 +213,8 @@ Entry* probe(const Position& pos) {
   if (pos.count<PAWN>(BLACK) == 1 && npm_b - npm_w <= BishopValueMg)
       e->factor[BLACK] = (uint8_t) SCALE_FACTOR_ONEPAWN;
 
-  e->value = pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK)
-		  + ((pos.count<BISHOP>(WHITE) > 1) - (pos.count<BISHOP>(BLACK) > 1)) * BishopPairBonus;
+  e->value = // pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK) +
+      ((pos.count<BISHOP>(WHITE) > 1) - (pos.count<BISHOP>(BLACK) > 1)) * BishopPairBonus;
 
   return e;
 }
