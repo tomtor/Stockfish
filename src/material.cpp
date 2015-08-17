@@ -115,6 +115,8 @@ namespace {
 
 namespace Material {
 
+const Score BishopPairBonus = S(100, 100);
+
 /// Material::probe() looks up the current position's material configuration in
 /// the material hash table. It returns a pointer to the Entry if the position
 /// is found. Otherwise a new Entry is computed and stored there, so we don't
@@ -211,16 +213,9 @@ Entry* probe(const Position& pos) {
   if (pos.count<PAWN>(BLACK) == 1 && npm_b - npm_w <= BishopValueMg)
       e->factor[BLACK] = (uint8_t) SCALE_FACTOR_ONEPAWN;
 
-  // Evaluate the material imbalance. We use PIECE_TYPE_NONE as a place holder
-  // for the bishop pair "extended piece", which allows us to be more flexible
-  // in defining bishop pair bonuses.
-  const int PieceCount[COLOR_NB][PIECE_TYPE_NB] = {
-  { pos.count<BISHOP>(WHITE) > 1, pos.count<PAWN>(WHITE), pos.count<KNIGHT>(WHITE),
-    pos.count<BISHOP>(WHITE)    , pos.count<ROOK>(WHITE), pos.count<QUEEN >(WHITE) },
-  { pos.count<BISHOP>(BLACK) > 1, pos.count<PAWN>(BLACK), pos.count<KNIGHT>(BLACK),
-    pos.count<BISHOP>(BLACK)    , pos.count<ROOK>(BLACK), pos.count<QUEEN >(BLACK) } };
+  e->value = pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK)
+		  + ((pos.count<BISHOP>(WHITE) > 1) - (pos.count<BISHOP>(BLACK) > 1)) * BishopPairBonus;
 
-  e->value = int16_t((imbalance<WHITE>(PieceCount) - imbalance<BLACK>(PieceCount)) / 16);
   return e;
 }
 
