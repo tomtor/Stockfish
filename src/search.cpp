@@ -1692,7 +1692,7 @@ void Thread::idle_loop() {
               }
 
               sp->spinlock.release();
-              fprintf(stderr, "J %02d\n", sp->depth);
+              fprintf(stderr, "J %lx %02d\n", this, sp->depth);
           }
       }
 

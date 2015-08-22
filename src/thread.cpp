@@ -183,7 +183,7 @@ void Thread::split(Position& pos, Stack* ss, Value alpha, Value beta, Value* bes
       }
 
       slave->spinlock.release();
-      if (didJoin) fprintf(stderr, "S %02d\n", depth);
+      if (didJoin) fprintf(stderr, "S %lx %02d\n", slave, depth);
   }
 
   // Everything is set up. The master thread enters the idle loop, from which
