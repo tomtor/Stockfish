@@ -1095,7 +1095,7 @@ moves_loop: // When in check and at SpNode search starts from here
                || !thisThread->activeSplitPoint->allSlavesSearching
                || (   Threads.size() > MAX_SLAVES_PER_SPLITPOINT
                    && thisThread->activeSplitPoint->slavesMask.count() == MAX_SLAVES_PER_SPLITPOINT))
-          &&  thisThread->splitPointsSize < (depth == Threads.minimumSplitDepth ? MAX_SPLITPOINTS_PER_THREAD : 2))
+          &&  thisThread->splitPointsSize < MAX_SPLITPOINTS_PER_THREAD)
       {
           assert(bestValue > -VALUE_INFINITE && bestValue < beta);
 
@@ -1692,6 +1692,7 @@ void Thread::idle_loop() {
               }
 
               sp->spinlock.release();
+              fprintf(stderr, "J %02d\n", sp->depth);
           }
       }
 

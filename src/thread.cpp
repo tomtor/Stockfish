@@ -143,7 +143,6 @@ void Thread::split(Position& pos, Stack* ss, Value alpha, Value beta, Value* bes
 
   // Pick and init the next available split point
   SplitPoint& sp = splitPoints[splitPointsSize];
-
   sp.spinlock.acquire(); // No contention here until we don't increment splitPointsSize
 
   sp.master = this;
@@ -174,9 +173,9 @@ void Thread::split(Position& pos, Stack* ss, Value alpha, Value beta, Value* bes
   while (    sp.slavesMask.count() < MAX_SLAVES_PER_SPLITPOINT
          && (slave = Threads.available_slave(&sp)) != nullptr)
   {
-     slave->spinlock.acquire();
-
-      if (slave->can_join(activeSplitPoint))
+      slave->spinlock.acquire();
+      bool didJoin;
+      if (didJoin= slave->can_join(activeSplitPoint))
       {
           activeSplitPoint->slavesMask.set(slave->idx);
           slave->activeSplitPoint = activeSplitPoint;
@@ -184,6 +183,7 @@ void Thread::split(Position& pos, Stack* ss, Value alpha, Value beta, Value* bes
       }
 
       slave->spinlock.release();
+      if (didJoin) fprintf(stderr, "S %02d\n", depth);
   }
 
   // Everything is set up. The master thread enters the idle loop, from which
