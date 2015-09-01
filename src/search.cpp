@@ -872,6 +872,11 @@ moves_loop: // When in check and at SpNode search starts from here
               extension = ONE_PLY;
       }
 
+      // extend pawn endings
+      if (  !extension && depth < 7 * ONE_PLY && (ss->ply & 1) == 0
+          && pos.non_pawn_material(WHITE) + pos.non_pawn_material(BLACK) == 0)
+          extension = ONE_PLY;
+
       // Update the current move (this must be done after singular extension search)
       newDepth = depth - ONE_PLY + extension;
 
