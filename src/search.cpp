@@ -1091,12 +1091,13 @@ moves_loop: // When in check and at SpNode search starts from here
           &&  Threads.size() >= 2
           &&  depth >= Threads.minimumSplitDepth
           &&  (   !thisThread->activeSplitPoint
-               || !thisThread->activeSplitPoint->allSlavesSearching
+               || (!thisThread->activeSplitPoint->allSlavesSearching && depth > Threads.minimumSplitDepth)
                || (   Threads.size() > MAX_SLAVES_PER_SPLITPOINT
                    && thisThread->activeSplitPoint->slavesMask.count() == MAX_SLAVES_PER_SPLITPOINT))
           &&  thisThread->splitPointsSize < MAX_SPLITPOINTS_PER_THREAD)
       {
           assert(bestValue > -VALUE_INFINITE && bestValue < beta);
+          //dbg_hit_on(!thisThread->activeSplitPoint);
 
           thisThread->split(pos, ss, alpha, beta, &bestValue, &bestMove,
                             depth, moveCount, &mp, NT, cutNode);
