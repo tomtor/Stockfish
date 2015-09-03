@@ -1091,7 +1091,7 @@ moves_loop: // When in check and at SpNode search starts from here
           &&  Threads.size() >= 2
           &&  depth >= Threads.minimumSplitDepth
           &&  (   !thisThread->activeSplitPoint
-               || (!thisThread->activeSplitPoint->allSlavesSearching && depth > Threads.minimumSplitDepth)
+               || (!thisThread->activeSplitPoint->allSlavesSearching && depth > Threads.minimumSplitDepth + 1)
                || (   Threads.size() > MAX_SLAVES_PER_SPLITPOINT
                    && thisThread->activeSplitPoint->slavesMask.count() == MAX_SLAVES_PER_SPLITPOINT))
           &&  thisThread->splitPointsSize < MAX_SPLITPOINTS_PER_THREAD)
