@@ -26,6 +26,7 @@
 #include <mutex>
 #include <thread>
 #include <vector>
+#include <queue>
 
 #include "material.h"
 #include "movepick.h"
@@ -55,6 +56,23 @@ public:
 };
 
 
+class QueueSpinlock {
+
+  Spinlock queue_lock;
+  Thread* first;
+
+  std::queue<Thread*> thread_queue;
+  //ConditionVariable sleepCondition;
+
+  //std::atomic_int lock;
+
+public:
+  QueueSpinlock() { first= 0;} // lock = 1; }
+  void acquire(Thread* thr);
+  void release(); // lock.store(1, std::memory_order_release); }
+};
+
+
 /// SplitPoint struct stores information shared by the threads searching in
 /// parallel below the same split point. It is populated at splitting time.
 
@@ -74,7 +92,7 @@ struct SplitPoint {
   SplitPoint* parentSplitPoint;
 
   // Shared variable data
-  Spinlock spinlock;
+  QueueSpinlock spinlock;
   std::bitset<MAX_THREADS> slavesMask;
   volatile bool allSlavesSearching;
   volatile uint64_t nodes;
@@ -128,7 +146,9 @@ struct Thread : public ThreadBase {
   SplitPoint* volatile activeSplitPoint;
   volatile size_t splitPointsSize;
   volatile bool searching;
+  volatile bool first;
 };
+
 
 
 /// MainThread and TimerThread are derived classes used to characterize the two
@@ -148,6 +168,7 @@ struct TimerThread : public ThreadBase {
 
   bool run = false;
 };
+
 
 
 /// ThreadPool struct handles all the threads related stuff like init, starting,

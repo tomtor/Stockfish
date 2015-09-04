@@ -144,7 +144,7 @@ void Thread::split(Position& pos, Stack* ss, Value alpha, Value beta, Value* bes
   // Pick and init the next available split point
   SplitPoint& sp = splitPoints[splitPointsSize];
 
-  sp.spinlock.acquire(); // No contention here until we don't increment splitPointsSize
+  sp.spinlock.acquire(this); // No contention here until we don't increment splitPointsSize
 
   sp.master = this;
   sp.parentSplitPoint = activeSplitPoint;
@@ -174,7 +174,7 @@ void Thread::split(Position& pos, Stack* ss, Value alpha, Value beta, Value* bes
   while (    sp.slavesMask.count() < MAX_SLAVES_PER_SPLITPOINT
          && (slave = Threads.available_slave(&sp)) != nullptr)
   {
-     slave->spinlock.acquire();
+      slave->spinlock.acquire();
 
       if (slave->can_join(activeSplitPoint))
       {
@@ -205,7 +205,7 @@ void Thread::split(Position& pos, Stack* ss, Value alpha, Value beta, Value* bes
   // We have returned from the idle loop, which means that all threads are
   // finished. Note that decreasing splitPointsSize must be done under lock
   // protection to avoid a race with Thread::can_join().
-  sp.spinlock.acquire();
+  sp.spinlock.acquire(this);
 
   --splitPointsSize;
   activeSplitPoint = sp.parentSplitPoint;
@@ -372,3 +372,56 @@ void ThreadPool::start_thinking(const Position& pos, const LimitsType& limits,
   main()->thinking = true;
   main()->notify_one(); // Wake up main thread: 'thinking' must be already set
 }
+
+
+
+void QueueSpinlock::acquire(Thread* thr) {
+
+	  // Join the queue
+      queue_lock.acquire();
+      if (first) {
+        thr->first = false;
+        thread_queue.push(thr);
+        //first= thread_queue.front();
+        //thread_queue.pop();
+      } else {
+    	thr->first= true;
+    	first= thr;
+      }
+
+      queue_lock.release();
+
+      if (first != thr)
+        //while (!thr->first)
+    	  //first->first = true;
+    	  //first->notify_one();
+    	  thr->wait_for(thr->first);
+        //}
+
+      //while (lock.fetch_sub(1, std::memory_order_acquire) != 1)
+          //while (lock.load(std::memory_order_relaxed) <= 0)
+              //std::this_thread::yield();
+}
+
+void QueueSpinlock::release() {
+	//Thread* first = 0;
+
+	queue_lock.acquire();
+	if (thread_queue.size()) {
+	  first= thread_queue.front();
+	  thread_queue.pop();
+	} else
+	  first= 0;
+
+	if (first) {
+		first->first = true;
+		first->notify_one();
+	}
+
+	queue_lock.release();
+
+
+
+// lock.store(1, std::memory_order_release); }
+}
+

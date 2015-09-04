@@ -888,7 +888,7 @@ moves_loop: // When in check and at SpNode search starts from here
               && moveCount >= FutilityMoveCounts[improving][depth])
           {
               if (SpNode)
-                  splitPoint->spinlock.acquire();
+                  splitPoint->spinlock.acquire(thisThread);
 
               continue;
           }
@@ -906,7 +906,7 @@ moves_loop: // When in check and at SpNode search starts from here
 
                   if (SpNode)
                   {
-                      splitPoint->spinlock.acquire();
+                      splitPoint->spinlock.acquire(thisThread);
                       if (bestValue > splitPoint->bestValue)
                           splitPoint->bestValue = bestValue;
                   }
@@ -918,7 +918,7 @@ moves_loop: // When in check and at SpNode search starts from here
           if (predictedDepth < 4 * ONE_PLY && pos.see_sign(move) < VALUE_ZERO)
           {
               if (SpNode)
-                  splitPoint->spinlock.acquire();
+                  splitPoint->spinlock.acquire(thisThread);
 
               continue;
           }
@@ -1013,7 +1013,7 @@ moves_loop: // When in check and at SpNode search starts from here
       // Step 18. Check for new best move
       if (SpNode)
       {
-          splitPoint->spinlock.acquire();
+          splitPoint->spinlock.acquire(thisThread);
           bestValue = splitPoint->bestValue;
           alpha = splitPoint->alpha;
       }
@@ -1604,7 +1604,7 @@ void Thread::idle_loop() {
           std::memcpy(ss-2, sp->ss-2, 5 * sizeof(Stack));
           ss->splitPoint = sp;
 
-          sp->spinlock.acquire();
+          sp->spinlock.acquire(this);
 
           assert(activePosition == nullptr);
 
@@ -1673,7 +1673,7 @@ void Thread::idle_loop() {
               sp = bestSp;
 
               // Recheck the conditions under lock protection
-              sp->spinlock.acquire();
+              sp->spinlock.acquire(this);
 
               if (   sp->allSlavesSearching
                   && sp->slavesMask.count() < MAX_SLAVES_PER_SPLITPOINT)
@@ -1753,7 +1753,7 @@ void check_time() {
           {
               SplitPoint& sp = th->splitPoints[i];
 
-              sp.spinlock.acquire();
+              sp.spinlock.acquire(th);
 
               nodes += sp.nodes;
 
