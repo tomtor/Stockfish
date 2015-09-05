@@ -377,8 +377,8 @@ void ThreadPool::start_thinking(const Position& pos, const LimitsType& limits,
 void QueueSpinlock::acquire(Thread* thr) {
     // Join the queue:
 	queue_lock.acquire();
-	fprintf(stderr, "acq %lx\n", this);
-	fprintf(stderr, "join: thr %ld size %ld first %ld\n", thr->idx, thread_queue.size(), first ? first->idx: -1);
+	//fprintf(stderr, "acq %lx\n", this);
+	//fprintf(stderr, "join: thr %ld size %ld first %ld\n", thr->idx, thread_queue.size(), first ? first->idx: -1);
     if (first) {
         thr->first = false;
         thread_queue.push(thr);
@@ -386,40 +386,49 @@ void QueueSpinlock::acquire(Thread* thr) {
         thr->first= true;
         first= thr;
     }
-    queue_lock.release();
+    //queue_lock.release();
 
     if (!thr->first) {
-      fprintf(stderr, "wait: thr %ld size %ld first %ld\n", thr->idx, thread_queue.size(), first ? first->idx: -1);
-	  thr->wait_for(thr->first);
+      queue_lock.release();
+      //fprintf(stderr, "wait: thr %ld size %ld first %ld\n", thr->idx, thread_queue.size(), first ? first->idx: -1);
+	  //thr->wait_for(thr->first);
+	  {
       std::unique_lock<std::mutex> lk(thr->qmutex);
       thr->wakeup.wait(lk, [&]{return thr->first;});
-      lk.unlock();
-	  fprintf(stderr, "wake: thr %ld size %ld first %ld\n", thr->idx, thread_queue.size(), first ? first->idx: -1);
+	  }
+      //lk.unlock();
+	  //fprintf(stderr, "wake: thr %ld size %ld first %ld\n", thr->idx, thread_queue.size(), first ? first->idx: -1);
 	  assert(first == thr);
 	  assert(thr->first);
-    }
+    } else
+    	queue_lock.release();
+	//fprintf(stderr, "exitA %lx\n", this);
 }
 
 void QueueSpinlock::release() {
 	queue_lock.acquire();
-	fprintf(stderr, "rel %lx\n", this);
-	fprintf(stderr, "rel: thr %ld size %ld first %ld\n", first->idx, thread_queue.size(), first ? first->idx: -1);
+	//fprintf(stderr, "rel %lx\n", this);
+	//fprintf(stderr, "rel: thr %ld size %ld first %ld\n", first->idx, thread_queue.size(), first ? first->idx: -1);
 	if (thread_queue.size()) {
 	    assert(thread_queue.front() != first);
 	    first= thread_queue.front();
 	    thread_queue.pop();
 	} else
 	    first= 0;
-	queue_lock.release();
+
 
 	if (first) {
 		first->first = true;
-		fprintf(stderr, "wakeup: thr %ld size %ld first %ld\n", first->idx, thread_queue.size(), first ? first->idx: -1);
-		first->notify_one();
+		//fprintf(stderr, "wakeup: thr %ld size %ld first %ld\n", first->idx, thread_queue.size(), first ? first->idx: -1);
+//		first->notify_one();
+		{
 		std::unique_lock<std::mutex> lk(first->qmutex);
-		lk.unlock();
+		//lk.unlock();
 		first->wakeup.notify_one();
+		}
+		//fprintf(stderr, "done: thr %ld size %ld first %ld\n", first->idx, thread_queue.size(), first ? first->idx: -1);
 	}
-
+	queue_lock.release();
+	//fprintf(stderr, "exitR %lx\n", this);
 }
 
