@@ -144,6 +144,8 @@ struct Thread : public ThreadBase {
   volatile size_t splitPointsSize;
   volatile bool searching;
   volatile bool first;
+  ConditionVariable wakeup;
+  Mutex qmutex;
 };
 
 
