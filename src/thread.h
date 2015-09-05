@@ -62,14 +62,11 @@ class QueueSpinlock {
   Thread* first;
 
   std::queue<Thread*> thread_queue;
-  //ConditionVariable sleepCondition;
-
-  //std::atomic_int lock;
 
 public:
-  QueueSpinlock() { first= 0;} // lock = 1; }
+  QueueSpinlock() { first= 0; }
   void acquire(Thread* thr);
-  void release(); // lock.store(1, std::memory_order_release); }
+  void release();
 };
 
 

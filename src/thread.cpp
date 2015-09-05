@@ -374,44 +374,33 @@ void ThreadPool::start_thinking(const Position& pos, const LimitsType& limits,
 }
 
 
-
 void QueueSpinlock::acquire(Thread* thr) {
-
-	  // Join the queue
-      queue_lock.acquire();
-      if (first) {
+    // Join the queue:
+	queue_lock.acquire();
+    if (first) {
         thr->first = false;
         thread_queue.push(thr);
-        //first= thread_queue.front();
-        //thread_queue.pop();
-      } else {
-    	thr->first= true;
-    	first= thr;
-      }
+    } else {
+        thr->first= true;
+        first= thr;
+    }
+    queue_lock.release();
 
-      queue_lock.release();
-
-      if (first != thr)
-        //while (!thr->first)
-    	  //first->first = true;
-    	  //first->notify_one();
-    	  thr->wait_for(thr->first);
-        //}
-
-      //while (lock.fetch_sub(1, std::memory_order_acquire) != 1)
-          //while (lock.load(std::memory_order_relaxed) <= 0)
-              //std::this_thread::yield();
+    if (!thr->first) {
+	  thr->wait_for(thr->first);
+	  assert(first == thr);
+	  assert(thr->first);
+    }
 }
 
 void QueueSpinlock::release() {
-	//Thread* first = 0;
-
 	queue_lock.acquire();
 	if (thread_queue.size()) {
-	  first= thread_queue.front();
-	  thread_queue.pop();
+	    assert(thread_queue.front() != first);
+	    first= thread_queue.front();
+	    thread_queue.pop();
 	} else
-	  first= 0;
+	    first= 0;
 
 	if (first) {
 		first->first = true;
@@ -419,9 +408,5 @@ void QueueSpinlock::release() {
 	}
 
 	queue_lock.release();
-
-
-
-// lock.store(1, std::memory_order_release); }
 }
 
