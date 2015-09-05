@@ -167,14 +167,16 @@ void Thread::split(Position& pos, Stack* ss, Value alpha, Value beta, Value* bes
   ++splitPointsSize;
   activeSplitPoint = &sp;
   activePosition = nullptr;
-/*
-  // Try to allocate available threads
+
+  // Try to allocate some available threads
   Thread* slave;
+  int count = 0;
 
   while (    sp.slavesMask.count() < MAX_SLAVES_PER_SPLITPOINT
+		 &&  count < 2
          && (slave = Threads.available_slave(&sp)) != nullptr)
   {
-     slave->spinlock.acquire();
+      slave->spinlock.acquire();
 
       if (slave->can_join(activeSplitPoint))
       {
@@ -184,8 +186,9 @@ void Thread::split(Position& pos, Stack* ss, Value alpha, Value beta, Value* bes
       }
 
       slave->spinlock.release();
+      ++count;
   }
-*/
+
   // Everything is set up. The master thread enters the idle loop, from which
   // it will instantly launch a search, because its 'searching' flag is set.
   // The thread will return from the idle loop when all slaves have finished
