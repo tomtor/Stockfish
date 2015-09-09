@@ -1058,7 +1058,8 @@ moves_loop: // When in check and at SpNode search starts from here
       if (value > bestValue)
       {
           bestValue = SpNode ? splitPoint->bestValue = value : value;
-          m50= best50 = move50;
+          best50 = move50;
+    	  m50= move50+1;
 
           if (value > alpha)
           {
@@ -1088,7 +1089,8 @@ moves_loop: // When in check and at SpNode search starts from here
       } else if (value == bestValue && move50 < best50) {
           //fprintf(stderr, "%d\n", best50);
     	  bestMove = SpNode ? splitPoint->bestMove = move : move;
-    	  m50= best50 = move50;
+    	  best50 = move50;
+    	  m50= move50+1;
 
     	  if (PvNode && !RootNode) // Update pv even in fail-high case
     	      update_pv(SpNode ? splitPoint->ss->pv : ss->pv, move, (ss+1)->pv);
