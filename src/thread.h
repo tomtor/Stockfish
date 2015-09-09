@@ -68,6 +68,7 @@ struct SplitPoint {
   Value beta;
   int nodeType;
   bool cutNode;
+  int m50; // fix this
 
   // Const pointers to shared data
   MovePicker* movePicker;
