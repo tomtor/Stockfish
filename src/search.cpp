@@ -645,7 +645,7 @@ namespace {
     if (inCheck)
     {
         ss->staticEval = eval = VALUE_NONE;
-        goto moves_loop;
+        goto check_id;
     }
 
     else if (ttHit)
@@ -655,7 +655,7 @@ namespace {
             eval = ss->staticEval = evaluate(pos);
 
         // Can ttValue be used as a better position evaluation?
-        if (ttValue != VALUE_NONE && tte->depth() >= depth)
+        if (ttValue != VALUE_NONE)
             if (tte->bound() & (ttValue > eval ? BOUND_LOWER : BOUND_UPPER))
                 eval = ttValue;
     }
@@ -763,6 +763,8 @@ namespace {
                     return value;
             }
     }
+
+check_id:
 
     // Step 10. Internal iterative deepening (skipped when in check)
     if (    depth >= (PvNode ? 5 * ONE_PLY : 8 * ONE_PLY)
