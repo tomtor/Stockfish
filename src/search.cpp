@@ -766,12 +766,12 @@ namespace {
 
 check_id:
 
-    // Step 10. Internal iterative deepening (skipped when in check)
-    if (    depth >= (PvNode ? 5 * ONE_PLY : 8 * ONE_PLY)
+    // Step 10. Internal iterative deepening
+    if (    depth >= (PvNode && !inCheck ? 5 * ONE_PLY : 8 * ONE_PLY)
         && !ttMove
         && (PvNode || ss->staticEval + 256 >= beta))
     {
-        Depth d = depth - 2 * ONE_PLY - (PvNode ? DEPTH_ZERO : depth / 4);
+        Depth d = depth - 2 * ONE_PLY - (PvNode && !inCheck ? DEPTH_ZERO : depth / 4);
         ss->skipEarlyPruning = true;
         search<PvNode ? PV : NonPV, false>(pos, ss, alpha, beta, d, true);
         ss->skipEarlyPruning = false;
