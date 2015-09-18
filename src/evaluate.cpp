@@ -312,7 +312,7 @@ namespace {
             // Penalty for single bishop supporting a friendly pawn on rank 7
             if (Pt == BISHOP && pos.count<BISHOP>(Us) == 1
                 && (pos.pieces(Us,PAWN) & ei.attackedBy[Us][BISHOP] & (Us == WHITE ? Rank7BB : Rank2BB)))
-                score -= BadBishopSupport;
+                score -= (pos.count<PAWN>(Us) == 1 ? 2 * BadBishopSupport : BadBishopSupport / pos.count<PAWN>(Us));
 
             // An important Chess960 pattern: A cornered bishop blocked by a friendly
             // pawn diagonally in front of it is a very serious problem, especially
