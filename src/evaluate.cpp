@@ -310,9 +310,10 @@ namespace {
                 score -= BishopPawns * ei.pi->pawns_on_same_color_squares(Us, s);
 
             // Penalty for single bishop supporting a friendly pawn on rank 7
-            if (Pt == BISHOP && pos.count<BISHOP>(Us) == 1
-                && (pos.pieces(Us,PAWN) & ei.attackedBy[Us][BISHOP] & (Us == WHITE ? Rank7BB : Rank2BB)))
-                score -= BadBishopSupport / pos.count<PAWN>(Us);
+            if (Pt == BISHOP && pos.count<BISHOP>(Us) == 1) {
+                if (pos.pieces(Us,PAWN) & ((DarkSquares & s) ? DarkSquares : ~DarkSquares) & (Us == WHITE ? Rank7BB : Rank2BB))
+                    score -= BadBishopSupport / pos.count<PAWN>(Us);
+            }
 
             // An important Chess960 pattern: A cornered bishop blocked by a friendly
             // pawn diagonally in front of it is a very serious problem, especially
