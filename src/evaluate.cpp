@@ -637,9 +637,9 @@ namespace {
         } // rr != 0
 
         // Penalty for single bishop of the wrong color
-        if (pos.count<BISHOP>(Us) == 1
+        if (pos.count<BISHOP>(Us) == 1 && pos.count<PAWN>(Us) <= 3
         && bool(pos.pieces(Us, BISHOP) & DarkSquares) != bool(file_of(s) & relative_rank(Us, RANK_8) & DarkSquares))
-            ebonus= ebonus * (pos.count<PAWN>(Us) + 7) / 16;
+            ebonus= (12 * ebonus + ebonus * pos.count<PAWN>(Us)) / 16;
 
         if (pos.count<PAWN>(Us) < pos.count<PAWN>(Them))
             ebonus += ebonus / 4;
