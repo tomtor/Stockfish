@@ -640,9 +640,9 @@ namespace {
         if (pos.count<PAWN>(Us) <= 3) {
             const bool darkPromSquare = file_of(s) & relative_rank(Us, RANK_8) & DarkSquares;
             int penalty = pos.count<BISHOP>(Us) == 1 && bool(pos.pieces(Us, BISHOP) & DarkSquares) != darkPromSquare;
-            penalty *= 2;
             penalty += pos.count<BISHOP>(Them) == 1 && bool(pos.pieces(Them, BISHOP) & DarkSquares) == darkPromSquare;
-            ebonus -= (4 - pos.count<PAWN>(Us)) * penalty * ebonus / 16;
+            if (penalty)
+                ebonus -= (4 - pos.count<PAWN>(Us)) * penalty * ebonus / 16;
         }
 
         if (pos.count<PAWN>(Us) < pos.count<PAWN>(Them))
