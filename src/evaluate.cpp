@@ -637,15 +637,13 @@ namespace {
         } // rr != 0
 
         // Penalty for single friendly/enemy bishop of the wrong color
-        //if (pos.count<PAWN>(Us) <= 4) {
-            const bool darkPromSquare = file_bb(s) & rank_bb(relative_rank(Us, RANK_8)) & DarkSquares;
-            int usPenalty   = pos.count<BISHOP>(Us) == 1 && bool(pos.pieces(Us, BISHOP) & DarkSquares) != darkPromSquare;
-            int themPenalty = pos.count<BISHOP>(Them) == 1 && bool(pos.pieces(Them, BISHOP) & DarkSquares) == darkPromSquare;
-            int penalty     = 2 * usPenalty + themPenalty;
-            if (penalty)
-                //ebonus -= (5 - pos.count<PAWN>(Us)) * penalty * ebonus / 15;
-                ebonus -= penalty * ebonus / 11;
-        //}
+        const bool darkPromSquare = file_bb(s) & rank_bb(relative_rank(Us, RANK_8)) & DarkSquares;
+        const int usPenalty       = pos.count<BISHOP>(Us) == 1
+                                 && bool(pos.pieces(Us, BISHOP) & DarkSquares) != darkPromSquare;
+        const int themPenalty     = pos.count<BISHOP>(Them) == 1
+                                 && bool(pos.pieces(Them, BISHOP) & DarkSquares) == darkPromSquare;
+
+        ebonus -= (2 * usPenalty + themPenalty) * 10;
 
         if (pos.count<PAWN>(Us) < pos.count<PAWN>(Them))
             ebonus += ebonus / 4;
