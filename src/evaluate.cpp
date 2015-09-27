@@ -185,6 +185,10 @@ namespace {
   const Score Hanging            = S(31, 26);
   const Score PawnAttackThreat   = S(20, 20);
 
+  const int   BPUsPenalty        = 22;
+  const int   BPThemPenalty      = 7;
+
+
   // Penalty for a bishop on a1/h1 (a8/h8 for black) which is trapped by
   // a friendly pawn on b2/g2 (b7/g7 for black). This can obviously only
   // happen in Chess960 games.
@@ -635,6 +639,15 @@ namespace {
             else if (pos.pieces(Us) & blockSq)
                 mbonus += rr * 3 + r * 2 + 3, ebonus += rr + r * 2;
         } // rr != 0
+
+        // Penalty for single friendly/enemy bishop of the wrong color
+        const bool darkPromSq = file_bb(s) & rank_bb(relative_rank(Us, RANK_8)) & DarkSquares;
+        if (   pos.count<BISHOP>(Us) == 1
+            && bool(pos.pieces(Us, BISHOP) & DarkSquares) != darkPromSq)
+            ebonus -= BPUsPenalty;
+        if (   pos.count<BISHOP>(Them) == 1
+            && bool(pos.pieces(Them, BISHOP) & DarkSquares) == darkPromSq)
+            ebonus -= BPThemPenalty;
 
         if (pos.count<PAWN>(Us) < pos.count<PAWN>(Them))
             ebonus += ebonus / 4;
