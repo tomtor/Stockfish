@@ -811,7 +811,7 @@ moves_loop: // When in check and at SpNode search starts from here
       if (move == excludedMove)
           continue;
 
-      if (!excludedMove && !slave && depth >= 5 * ONE_PLY && ss->ply > ONE_PLY && !cutNode
+      if (/* !excludedMove && */ !slave && depth >= 5 * ONE_PLY && ss->ply > ONE_PLY && !cutNode
       && Threads.size() >= 2 && (slave= Threads.available_slave())) {
           slave->spinlock.acquire();
           if (! slave->searching) {
@@ -822,13 +822,13 @@ moves_loop: // When in check and at SpNode search starts from here
               sp->slavesMask.set(slave->idx);
               sp->alpha= alpha;
               sp->beta= beta;
-              sp->depth= depth;
+              sp->depth= depth+2*ONE_PLY;
               sp->cutNode= cutNode;
               sp->nodeType= NT;
               sp->ss= slave->ss;
               std::memcpy(slave->ss-2, ss-2, 5 * sizeof(Stack));
               slave->ss->splitPoint= sp;
-              ss->excludedMove= move;
+              //ss->excludedMove= move;
 
               slave->searching= true;
           } else
