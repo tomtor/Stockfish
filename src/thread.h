@@ -118,6 +118,8 @@ struct Thread : public ThreadBase {
   void split(Position& pos, Search::Stack* ss, Value alpha, Value beta, Value* bestValue, Move* bestMove,
              Depth depth, int moveCount, MovePicker* movePicker, int nodeType, bool cutNode);
 
+  Position* tpos;
+  Search::Stack* ss;
   SplitPoint splitPoints[MAX_SPLITPOINTS_PER_THREAD];
   Pawns::Table pawnsTable;
   Material::Table materialTable;
@@ -162,6 +164,7 @@ struct ThreadPool : public std::vector<Thread*> {
   MainThread* main() { return static_cast<MainThread*>(at(0)); }
   void read_uci_options();
   Thread* available_slave(const SplitPoint* sp) const;
+  Thread* available_slave() const;
   void start_thinking(const Position&, const Search::LimitsType&, Search::StateStackPtr&);
 
   Depth minimumSplitDepth;

@@ -92,6 +92,7 @@ public:
   Position(const Position& pos, Thread* th) { *this = pos; thisThread = th; }
   Position(const std::string& f, bool c960, Thread* th) { set(f, c960, th); }
   Position& operator=(const Position&); // To assign RootPos from UCI
+  void copy(const Position& pos, Thread* th) { *this = pos; thisThread = th; }
 
   // FEN string input/output
   void set(const std::string& fenStr, bool isChess960, Thread* th);

@@ -564,7 +564,7 @@ namespace {
     if (!RootNode)
     {
         // Step 2. Check for aborted search and immediate draw
-        if (Signals.stop || pos.is_draw() || ss->ply >= MAX_PLY)
+        if (Signals.stop || (thisThread->idx > 0 || pos.is_draw()) || ss->ply >= MAX_PLY)
             return ss->ply >= MAX_PLY && !inCheck ? evaluate(pos) : DrawValue[pos.side_to_move()];
 
         // Step 3. Mate distance pruning. Even if we mate at the next move our score
@@ -800,6 +800,8 @@ moves_loop: // When in check and at SpNode search starts from here
                            && (tte->bound() & BOUND_LOWER)
                            &&  tte->depth() >= depth - 3 * ONE_PLY;
 
+    Thread *slave= 0;
+
     // Step 11. Loop through moves
     // Loop through all pseudo-legal moves until no moves remain or a beta cutoff occurs
     while ((move = mp.next_move<SpNode>()) != MOVE_NONE)
@@ -808,6 +810,32 @@ moves_loop: // When in check and at SpNode search starts from here
 
       if (move == excludedMove)
           continue;
+
+      if (!excludedMove && !slave && depth >= 5 * ONE_PLY && ss->ply > ONE_PLY && !cutNode
+      && Threads.size() >= 2 && (slave= Threads.available_slave())) {
+          slave->spinlock.acquire();
+          if (! slave->searching) {
+              SplitPoint* sp= slave->activeSplitPoint= &slave->splitPoints[0];
+              slave->tpos->copy(pos, slave);
+
+              sp->slavesMask = 0;
+              sp->slavesMask.set(slave->idx);
+              sp->alpha= alpha;
+              sp->beta= beta;
+              sp->depth= depth;
+              sp->cutNode= cutNode;
+              sp->nodeType= NT;
+              sp->ss= slave->ss;
+              std::memcpy(slave->ss-2, ss-2, 5 * sizeof(Stack));
+              slave->ss->splitPoint= sp;
+              ss->excludedMove= move;
+
+              slave->searching= true;
+          } else
+              slave = 0;
+          slave->spinlock.release();
+          //if (slave) std::cerr << "S " << slave->idx << '\n';
+      }
 
       // At root obey the "searchmoves" option and skip moves not listed in Root
       // Move List. As a consequence any illegal move is also skipped. In MultiPV
@@ -1086,6 +1114,7 @@ moves_loop: // When in check and at SpNode search starts from here
       if (!SpNode && !captureOrPromotion && move != bestMove && quietCount < 64)
           quietsSearched[quietCount++] = move;
 
+#if 0
       // Step 19. Check for splitting the search
       if (   !SpNode
           &&  Threads.size() >= 2
@@ -1107,7 +1136,9 @@ moves_loop: // When in check and at SpNode search starts from here
           if (bestValue >= beta)
               break;
       }
+#endif
     }
+
 
     if (SpNode)
         return bestValue;
@@ -1580,6 +1611,12 @@ bool RootMove::extract_ponder_from_tt(Position& pos)
 
 void Thread::idle_loop() {
 
+  Stack stack[MAX_PLY+4];
+  ss = stack+2; // To allow referencing (ss-2) and (ss+2)
+
+  Position pos;
+  tpos= &pos;
+
   // Pointer 'this_sp' is not null only if we are called from split(), and not
   // at the thread creation. This means we are the split point's master.
   SplitPoint* this_sp = activeSplitPoint;
@@ -1591,36 +1628,39 @@ void Thread::idle_loop() {
       // If this thread has been assigned work, launch a search
       while (searching)
       {
-          spinlock.acquire();
+          //std::cerr << "Search " << idx << '\n';
+          //spinlock.acquire();
 
-          assert(activeSplitPoint);
+          //assert(activeSplitPoint);
           SplitPoint* sp = activeSplitPoint;
 
-          spinlock.release();
+          //spinlock.release();
 
-          Stack stack[MAX_PLY+4], *ss = stack+2; // To allow referencing (ss-2) and (ss+2)
-          Position pos(*sp->pos, this);
 
-          std::memcpy(ss-2, sp->ss-2, 5 * sizeof(Stack));
+          //Position pos(*sp->pos, this);
+
+
+          //std::memcpy(ss-2, sp->ss-2, 5 * sizeof(Stack));
           ss->splitPoint = sp;
 
-          sp->spinlock.acquire();
+          //sp->spinlock.acquire();
 
           assert(activePosition == nullptr);
 
           activePosition = &pos;
-
           if (sp->nodeType == NonPV)
-              search<NonPV, true>(pos, ss, sp->alpha, sp->beta, sp->depth, sp->cutNode);
+              search<NonPV, false>(pos, ss, sp->alpha, sp->beta, sp->depth, sp->cutNode);
 
           else if (sp->nodeType == PV)
-              search<PV, true>(pos, ss, sp->alpha, sp->beta, sp->depth, sp->cutNode);
+              search<PV, false>(pos, ss, sp->alpha, sp->beta, sp->depth, sp->cutNode);
 
           else if (sp->nodeType == Root)
-              search<Root, true>(pos, ss, sp->alpha, sp->beta, sp->depth, sp->cutNode);
+              search<Root, false>(pos, ss, sp->alpha, sp->beta, sp->depth, sp->cutNode);
 
           else
               assert(false);
+
+          //std::cerr << "End " << idx << '\n';
 
           spinlock.acquire();
           assert(searching);
@@ -1635,8 +1675,8 @@ void Thread::idle_loop() {
           // in a safe way because it could have been released under our feet by
           // the sp master.
           spinlock.release();
-          sp->spinlock.release();
-
+          //sp->spinlock.release();
+#if 0
           // Try to late join to another split point if none of its slaves has
           // already finished.
           SplitPoint* bestSp = NULL;
@@ -1694,7 +1734,9 @@ void Thread::idle_loop() {
 
               sp->spinlock.release();
           }
+#endif
       }
+
 
       // If search is finished then sleep, otherwise just yield
       if (!Threads.main()->thinking)

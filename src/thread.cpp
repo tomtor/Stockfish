@@ -132,7 +132,7 @@ bool Thread::can_join(const SplitPoint* sp) const {
 // leave their idle loops and call search(). When all threads have returned from
 // search() then split() returns.
 
-void Thread::split(Position& pos, Stack* ss, Value alpha, Value beta, Value* bestValue,
+void Thread::split(Position& pos, Stack* ssp, Value alpha, Value beta, Value* bestValue,
                    Move* bestMove, Depth depth, int moveCount,
                    MovePicker* movePicker, int nodeType, bool cutNode) {
 
@@ -162,7 +162,7 @@ void Thread::split(Position& pos, Stack* ss, Value alpha, Value beta, Value* bes
   sp.pos = &pos;
   sp.nodes = 0;
   sp.cutoff = false;
-  sp.ss = ss;
+  sp.ss = ssp;
   sp.allSlavesSearching = true; // Must be set under lock protection
 
   ++splitPointsSize;
@@ -343,6 +343,15 @@ Thread* ThreadPool::available_slave(const SplitPoint* sp) const {
 
   for (Thread* th : *this)
       if (th->can_join(sp))
+          return th;
+
+  return nullptr;
+}
+
+Thread* ThreadPool::available_slave() const {
+
+  for (Thread* th : *this)
+      if (! th->searching)
           return th;
 
   return nullptr;
