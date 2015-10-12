@@ -1096,7 +1096,8 @@ moves_loop: // When in check search starts from here
     else if (bestMove && !pos.capture_or_promotion(bestMove))
         update_stats(pos, ss, bestMove, depth, quietsSearched, quietCount);
 
-    tte->save(posKey, value_to_tt(bestValue, ss->ply),
+    if (thisThread == Threads.main() || ss->ply > 3)
+        tte->save(posKey, value_to_tt(bestValue, ss->ply),
               bestValue >= beta ? BOUND_LOWER :
               PvNode && bestMove ? BOUND_EXACT : BOUND_UPPER,
               depth, bestMove, ss->staticEval, TT.generation());
