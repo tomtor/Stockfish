@@ -40,7 +40,7 @@ namespace {
 
  const size_t THREAD_ALLOC_UNIT = PAGE_ROUND_UP(sizeof(ThreadData));
 
- char threadArena[MAX_THREADS * THREAD_ALLOC_UNIT] ALIGNED_(4096);
+ char threadArena[MAX_THREADS * THREAD_ALLOC_UNIT] ALIGNED_(PAGE_SIZE);
 
  int nAllocatedThread= 0;
 
