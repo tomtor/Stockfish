@@ -36,9 +36,10 @@ namespace {
  // Simple allocator which allocates storage on page boundaries for Thread objects
  // for optimal performance on NUMA architectures
 
- #define PAGE_ROUND_UP(x) ( (((x)) + PAGE_SIZE-1)  & (~(PAGE_SIZE-1)) )
+ //#define PAGE_ROUND_UP(x) ( (((x)) + PAGE_SIZE-1)  & (~(PAGE_SIZE-1)) )
 
- const size_t THREAD_ALLOC_UNIT = PAGE_ROUND_UP(sizeof(ThreadData)) + PAGE_SIZE;
+ //const size_t THREAD_ALLOC_UNIT = PAGE_ROUND_UP(sizeof(ThreadData)) + PAGE_SIZE;
+ const size_t THREAD_ALLOC_UNIT = sizeof(ThreadData) + PAGE_SIZE;
 
  //char threadArena[MAX_THREADS * THREAD_ALLOC_UNIT] ALIGNED_(PAGE_SIZE);
  union {
@@ -172,6 +173,10 @@ void Thread::idle_loop() {
 void MainThread::idle_loop() {
 
   td = new ThreadData;
+
+  td->searching = false; td->maxPly = 0;
+
+  td->idx = Threads.size(); // Starts from 0
 
   while (!exit)
   {
