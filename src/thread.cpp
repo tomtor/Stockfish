@@ -33,6 +33,23 @@ extern void check_time();
 
 namespace {
 
+ // Simple allocator which allocates storage on page boundaries for Thread objects
+ // for optimal performance on NUMA architectures
+
+ #define PAGE_ROUND_UP(x) ( (((x)) + PAGE_SIZE-1)  & (~(PAGE_SIZE-1)) )
+
+ const size_t THREAD_ALLOC_UNIT = PAGE_ROUND_UP(sizeof(ThreadData));
+
+ char threadArena[MAX_THREADS * THREAD_ALLOC_UNIT] ALIGNED_(4096);
+
+ int nAllocatedThread= 0;
+
+ void *allocThreadData()
+ {
+     return threadArena + (nAllocatedThread++ * THREAD_ALLOC_UNIT);
+ }
+
+
  // Helpers to launch a thread after creation and joining before delete. Must be
  // outside Thread c'tor and d'tor because the object must be fully initialized
  // when start_routine (and hence virtual idle_loop) is called and when joining.
@@ -104,26 +121,42 @@ void TimerThread::idle_loop() {
 }
 
 
+void* ThreadData::operator new(std::size_t)
+{
+    return allocThreadData();
+}
+
+Thread::Thread()
+{
+    if (!nAllocatedThread) // Allocate for bench command
+        td= new ThreadData;
+}
+
 // Thread::idle_loop() is where the thread is parked when it has no work to do
 
 void Thread::idle_loop() {
 
-  std::memset(this, 0, sizeof(*this)); // Touch memory for NUMA allocation
+  // Touch memory for NUMA allocation
+  td= new ThreadData;
 
-  //searching = false; maxPly = 0; // Done by memset
+  std::memset(td->stack, 0, sizeof(td->stack));
+  td->History.clear();
+  td->Countermoves.clear();
 
-  idx = Threads.size(); // Starts from 0
+  td->searching = false; td->maxPly = 0;
+
+  td->idx = Threads.size(); // Starts from 0
 
   while (!exit)
   {
       std::unique_lock<Mutex> lk(mutex);
 
-      while (!searching && !exit)
+      while (!td->searching && !exit)
           sleepCondition.wait(lk);
 
       lk.unlock();
 
-      if (!exit && searching)
+      if (!exit && td->searching)
           search();
   }
 }
@@ -220,7 +253,7 @@ int64_t ThreadPool::nodes_searched() {
 
   int64_t nodes = 0;
   for (Thread *th : *this)
-      nodes += th->rootPos.nodes_searched();
+      nodes += th->td->rootPos.nodes_searched();
   return nodes;
 }
 
@@ -235,8 +268,8 @@ void ThreadPool::start_thinking(const Position& pos, const LimitsType& limits,
   Signals.stopOnPonderhit = Signals.firstRootMove = false;
   Signals.stop = Signals.failedLowAtRoot = false;
 
-  main()->rootMoves.clear();
-  main()->rootPos = pos;
+  main()->td->rootMoves.clear();
+  main()->td->rootPos = pos;
   Limits = limits;
   if (states.get()) // If we don't set a new position, preserve current state
   {
@@ -247,7 +280,7 @@ void ThreadPool::start_thinking(const Position& pos, const LimitsType& limits,
   for (const auto& m : MoveList<LEGAL>(pos))
       if (   limits.searchmoves.empty()
           || std::count(limits.searchmoves.begin(), limits.searchmoves.end(), m))
-          main()->rootMoves.push_back(RootMove(m));
+          main()->td->rootMoves.push_back(RootMove(m));
 
   main()->thinking = true;
   main()->notify_one(); // Wake up main thread: 'thinking' must be already set
