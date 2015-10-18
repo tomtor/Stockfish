@@ -38,6 +38,15 @@ struct Thread;
 
 const size_t MAX_THREADS = 128;
 
+const size_t PAGE_SIZE = 4096;
+
+#if defined(_MSC_VER)
+#define ALIGNED_(x) __declspec(align(x))
+#else
+#if defined(__GNUC__)
+#define ALIGNED_(x) __attribute__ ((aligned(x)))
+#endif
+#endif
 
 /// ThreadBase struct is the base of the hierarchy from where we derive all the
 /// specialized thread classes.
@@ -61,25 +70,32 @@ struct ThreadBase : public std::thread {
 /// tables so that once we get a pointer to an entry its life time is unlimited
 /// and we don't have to care about someone changing the entry under our feet.
 
+struct ThreadData {
+    void* operator new (std::size_t);
+    void operator delete (void*) { };
+
+    Pawns::Table pawnsTable;
+    Material::Table materialTable;
+    Endgames endgames;
+    size_t idx, PVIdx;
+    int maxPly;
+    volatile bool searching;
+
+    Position rootPos;
+    Search::RootMoveVector rootMoves;
+    Search::Stack stack[MAX_PLY+4];
+    HistoryStats History;
+    MovesStats Countermoves;
+    Depth depth;
+};
+
 struct Thread : public ThreadBase {
 
-  Thread();
   virtual void idle_loop();
   void search(bool isMainThread = false);
+  Thread();
 
-  Pawns::Table pawnsTable;
-  Material::Table materialTable;
-  Endgames endgames;
-  size_t idx, PVIdx;
-  int maxPly;
-  volatile bool searching;
-
-  Position rootPos;
-  Search::RootMoveVector rootMoves;
-  Search::Stack stack[MAX_PLY+4];
-  HistoryStats History;
-  MovesStats Countermoves;
-  Depth depth;
+  ThreadData *td;
 };
 
 
