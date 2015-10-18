@@ -41,13 +41,16 @@ namespace {
  const size_t THREAD_ALLOC_UNIT = PAGE_ROUND_UP(sizeof(ThreadData));
 
  //char threadArena[MAX_THREADS * THREAD_ALLOC_UNIT] ALIGNED_(PAGE_SIZE);
- char threadArena[MAX_THREADS * THREAD_ALLOC_UNIT];
+ union {
+     char threadArena[MAX_THREADS * THREAD_ALLOC_UNIT];
+     double f;
+ } ata;
 
  int nAllocatedThread= 0;
 
  void *allocThreadData()
  {
-     return threadArena + (nAllocatedThread++ * THREAD_ALLOC_UNIT);
+     return ata.threadArena + (nAllocatedThread++ * THREAD_ALLOC_UNIT);
  }
 
 
