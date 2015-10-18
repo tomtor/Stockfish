@@ -128,8 +128,7 @@ void* ThreadData::operator new(std::size_t)
 
 Thread::Thread()
 {
-    if (!nAllocatedThread) // Allocate for bench command
-        td= new ThreadData;
+    td = 0;
 }
 
 // Thread::idle_loop() is where the thread is parked when it has no work to do
@@ -137,7 +136,8 @@ Thread::Thread()
 void Thread::idle_loop() {
 
   // Touch memory for NUMA allocation
-  td= new ThreadData;
+  if (!td)
+      td= new ThreadData;
 
   std::memset(td->stack, 0, sizeof(td->stack));
   td->History.clear();
@@ -166,6 +166,8 @@ void Thread::idle_loop() {
 // when there is a new search. The main thread will launch all the slave threads.
 
 void MainThread::idle_loop() {
+
+  td = new ThreadData;
 
   while (!exit)
   {
