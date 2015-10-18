@@ -40,13 +40,13 @@ const size_t MAX_THREADS = 128;
 
 const size_t PAGE_SIZE = 4096;
 
-#if defined(_MSC_VER)
-#define ALIGNED_(x) __declspec(align(x))
-#else
-#if defined(__GNUC__)
-#define ALIGNED_(x) __attribute__ ((aligned(x)))
-#endif
-#endif
+//#if defined(_MSC_VER)
+//#define ALIGNED_(x) __declspec(align(x))
+//#else
+//#if defined(__GNUC__)
+//#define ALIGNED_(x) __attribute__ ((aligned(x)))
+//#endif
+//#endif
 
 /// ThreadBase struct is the base of the hierarchy from where we derive all the
 /// specialized thread classes.
