@@ -38,12 +38,12 @@ namespace {
 
  #define PAGE_ROUND_UP(x) ( (((x)) + PAGE_SIZE-1)  & (~(PAGE_SIZE-1)) )
 
- const size_t THREAD_ALLOC_UNIT = PAGE_ROUND_UP(sizeof(ThreadData));
+ const size_t THREAD_ALLOC_UNIT = PAGE_ROUND_UP(sizeof(ThreadData)) + PAGE_SIZE;
 
  //char threadArena[MAX_THREADS * THREAD_ALLOC_UNIT] ALIGNED_(PAGE_SIZE);
  union {
      char threadArena[MAX_THREADS * THREAD_ALLOC_UNIT];
-     double f;
+     double f; // force alignment
  } ata;
 
  int nAllocatedThread= 0;
