@@ -147,7 +147,6 @@ void benchmark(const Position& current, istream& is) {
   for (size_t i = 0; i < fens.size(); ++i)
   {
       Position pos(fens[i], Options["UCI_Chess960"], Threads.main()->td);
-      fprintf(stdout, "OperN\n");
 
       cerr << "\nPosition: " << i + 1 << '/' << fens.size() << endl;
 
