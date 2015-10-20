@@ -81,11 +81,10 @@ struct ThreadData {
 };
 
 struct Thread : public ThreadBase {
-
   virtual void idle_loop();
   void search(bool isMainThread = false);
 
-  ThreadData *td;
+  ThreadData *td = 0;
 };
 
 
