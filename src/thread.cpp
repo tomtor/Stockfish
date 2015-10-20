@@ -121,9 +121,9 @@ ThreadData::ThreadData()
 // Thread::idle_loop() is where the thread is parked when it has no work to do
 
 void Thread::idle_loop() {
+  ThreadData std;
 
-  if (!td)
-      td= new ThreadData;
+  td= &std;
 
   while (!exit)
   {
@@ -137,6 +137,7 @@ void Thread::idle_loop() {
       if (!exit && td->searching)
           search();
   }
+  td = 0;
 }
 
 

@@ -65,8 +65,6 @@ struct ThreadData {
 
     ThreadData();
 
-    double header[512]; // Allow access by main thread new() implementation
-
     Pawns::Table pawnsTable;
     Material::Table materialTable;
     Endgames endgames;
@@ -80,14 +78,10 @@ struct ThreadData {
     HistoryStats History;
     MovesStats Countermoves;
     Depth depth;
-
-    double spacer[512]; // Avoid overlapping VM pages
 };
 
 struct Thread : public ThreadBase {
 
-  Thread() { td = 0; }
-  ~Thread() { if (td) delete td; }
   virtual void idle_loop();
   void search(bool isMainThread = false);
 
@@ -100,6 +94,7 @@ struct Thread : public ThreadBase {
 
 struct MainThread : public Thread {
   MainThread() { td = new ThreadData; }
+  ~MainThread() { delete td; }
   virtual void idle_loop();
   void join();
   void think();
