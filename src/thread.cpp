@@ -166,8 +166,6 @@ void Thread::idle_loop() {
 
 void MainThread::idle_loop() {
 
-  td = new ThreadData;
-
   while (!exit)
   {
       std::unique_lock<Mutex> lk(mutex);

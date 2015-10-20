@@ -97,6 +97,7 @@ struct Thread : public ThreadBase {
 /// special threads: the main one and the recurring timer.
 
 struct MainThread : public Thread {
+  MainThread() { td = new ThreadData; }
   virtual void idle_loop();
   void join();
   void think();
