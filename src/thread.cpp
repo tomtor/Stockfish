@@ -104,25 +104,6 @@ void TimerThread::idle_loop() {
 }
 
 
-// Simple allocator which allocates storage untouched by
-// main thread new() invocations for Thread(Data) objects
-
-
-int nAllocatedThread = 0;
-
-ThreadData threadArena[MAX_THREADS];
-
-void* ThreadData::operator new(std::size_t)
-{
-    return threadArena + nAllocatedThread++;
-}
-
-void ThreadData::operator delete(void*)
-{
-    --nAllocatedThread;
-}
-
-
 ThreadData::ThreadData()
 {
     // Touch memory for NUMA allocation

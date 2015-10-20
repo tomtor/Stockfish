@@ -65,6 +65,8 @@ struct ThreadData {
 
     ThreadData();
 
+    double header[512]; // Allow access by main thread new() implementation
+
     Pawns::Table pawnsTable;
     Material::Table materialTable;
     Endgames endgames;
@@ -79,10 +81,7 @@ struct ThreadData {
     MovesStats Countermoves;
     Depth depth;
 
-    char filler[4096]; // Avoid overlapping VM pages
-
-    void* operator new (std::size_t);
-    void operator delete (void*);
+    double spacer[512]; // Avoid overlapping VM pages
 };
 
 struct Thread : public ThreadBase {
