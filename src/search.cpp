@@ -183,6 +183,8 @@ void Search::reset () {
 
   for (Thread* th : Threads)
   {
+      while (!th->td) // busy wait for thread start
+          std::this_thread::yield();
       th->td->History.clear();
       th->td->Countermoves.clear();
   }

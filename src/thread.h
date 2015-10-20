@@ -56,7 +56,7 @@ struct ThreadBase : public std::thread {
 };
 
 
-/// Thread struct keeps together all the thread related stuff like locks, state
+/// ThreadData struct keeps together all the thread related stuff like locks, state
 /// and especially split points. We also use per-thread pawn and material hash
 /// tables so that once we get a pointer to an entry its life time is unlimited
 /// and we don't have to care about someone changing the entry under our feet.
@@ -80,12 +80,13 @@ struct ThreadData {
     Depth depth;
 
     void* operator new (std::size_t);
-private:
-    void operator delete (void*) { };
+    void operator delete (void*);
 };
 
 struct Thread : public ThreadBase {
 
+  Thread() { td = 0; }
+  ~Thread() { if (td) delete td; }
   virtual void idle_loop();
   void search(bool isMainThread = false);
 
