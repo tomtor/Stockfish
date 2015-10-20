@@ -33,28 +33,6 @@ extern void check_time();
 
 namespace {
 
- // Simple allocator which allocates storage on page boundaries for Thread objects
- // for optimal performance on NUMA architectures
-
- //#define PAGE_ROUND_UP(x) ( (((x)) + PAGE_SIZE-1)  & (~(PAGE_SIZE-1)) )
-
- //const size_t THREAD_ALLOC_UNIT = PAGE_ROUND_UP(sizeof(ThreadData)) + PAGE_SIZE;
- const size_t THREAD_ALLOC_UNIT = sizeof(ThreadData) + PAGE_SIZE;
-
- //char threadArena[MAX_THREADS * THREAD_ALLOC_UNIT] ALIGNED_(PAGE_SIZE);
- union {
-     char threadArena[MAX_THREADS * THREAD_ALLOC_UNIT];
-     double f; // force alignment
- } ata;
-
- int nAllocatedThread= 0;
-
- void *allocThreadData()
- {
-     return ata.threadArena + (nAllocatedThread++ * THREAD_ALLOC_UNIT);
- }
-
-
  // Helpers to launch a thread after creation and joining before delete. Must be
  // outside Thread c'tor and d'tor because the object must be fully initialized
  // when start_routine (and hence virtual idle_loop) is called and when joining.
@@ -126,31 +104,47 @@ void TimerThread::idle_loop() {
 }
 
 
+const size_t PAGE_SIZE = 4096;
+
+// Simple allocator which allocates storage untouched by
+// main thread new() invocations for Thread(Data) objects
+
+#define PAGE_ROUND_UP(x) ( (((x)) + PAGE_SIZE-1)  & (~(PAGE_SIZE-1)) )
+
+const size_t THREAD_ALLOC_UNIT = PAGE_ROUND_UP(sizeof(ThreadData)) + PAGE_SIZE;
+
+int nAllocatedThread = 0;
+
+union {
+    char   threadArena[MAX_THREADS * THREAD_ALLOC_UNIT];
+    double f; // force alignment
+} ata;
+
 void* ThreadData::operator new(std::size_t)
 {
-    return allocThreadData();
+    return ata.threadArena + (nAllocatedThread++ * THREAD_ALLOC_UNIT);
 }
 
-Thread::Thread()
+
+ThreadData::ThreadData()
 {
-    td = 0;
+    // Touch memory for NUMA allocation
+
+    std::memset(stack, 0, sizeof(stack));
+    History.clear();
+    Countermoves.clear();
+
+    searching = false;
+    maxPly = 0;
+
+    idx = Threads.size(); // Starts from 0
 }
 
 // Thread::idle_loop() is where the thread is parked when it has no work to do
 
 void Thread::idle_loop() {
 
-  // Touch memory for NUMA allocation
-  if (!td)
-      td= new ThreadData;
-
-  std::memset(td->stack, 0, sizeof(td->stack));
-  td->History.clear();
-  td->Countermoves.clear();
-
-  td->searching = false; td->maxPly = 0;
-
-  td->idx = Threads.size(); // Starts from 0
+  td= new ThreadData;
 
   while (!exit)
   {
@@ -173,10 +167,6 @@ void Thread::idle_loop() {
 void MainThread::idle_loop() {
 
   td = new ThreadData;
-
-  td->searching = false; td->maxPly = 0;
-
-  td->idx = Threads.size(); // Starts from 0
 
   while (!exit)
   {
