@@ -107,22 +107,14 @@ void TimerThread::idle_loop() {
 // Simple allocator which allocates storage untouched by
 // main thread new() invocations for Thread(Data) objects
 
-const size_t PAGE_SIZE = 4096;
-
-#define PAGE_ROUND_UP(x) ( (((x)) + PAGE_SIZE-1)  & (~(PAGE_SIZE-1)) )
-
-const size_t THREAD_ALLOC_UNIT = PAGE_ROUND_UP(sizeof(ThreadData)) + PAGE_SIZE;
 
 int nAllocatedThread = 0;
 
-union {
-    char   threadArena[MAX_THREADS * THREAD_ALLOC_UNIT];
-    double f; // force alignment
-} ata;
+ThreadData threadArena[MAX_THREADS];
 
 void* ThreadData::operator new(std::size_t)
 {
-    return ata.threadArena + (nAllocatedThread++ * THREAD_ALLOC_UNIT);
+    return threadArena + nAllocatedThread++;
 }
 
 void ThreadData::operator delete(void*)

@@ -79,6 +79,8 @@ struct ThreadData {
     MovesStats Countermoves;
     Depth depth;
 
+    char filler[4096]; // Avoid overlapping VM pages
+
     void* operator new (std::size_t);
     void operator delete (void*);
 };
