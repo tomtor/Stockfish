@@ -84,17 +84,6 @@ void ThreadBase::wait_while(volatile const bool& condition) {
 }
 
 
-// Thread c'tor makes some init but does not launch any execution thread that
-// will be started only when c'tor returns.
-
-Thread::Thread() /* : splitPoints() */ { // Initialization of non POD broken in MSVC
-
-  searching = false;
-  maxPly = 0;
-  idx = Threads.size(); // Starts from 0
-}
-
-
 // TimerThread::idle_loop() is where the timer thread waits Resolution milliseconds
 // and then calls check_time(). When not searching, thread sleeps until it's woken up.
 
@@ -115,22 +104,40 @@ void TimerThread::idle_loop() {
 }
 
 
+ThreadData::ThreadData()
+{
+    // Touch memory for NUMA allocation
+
+    std::memset(stack, 0, sizeof(stack));
+    History.clear();
+    Countermoves.clear();
+
+    searching = false;
+    maxPly = 0;
+
+    idx = Threads.size(); // Starts from 0
+}
+
 // Thread::idle_loop() is where the thread is parked when it has no work to do
 
 void Thread::idle_loop() {
+  ThreadData std;
+
+  td= &std;
 
   while (!exit)
   {
       std::unique_lock<Mutex> lk(mutex);
 
-      while (!searching && !exit)
+      while (!td->searching && !exit)
           sleepCondition.wait(lk);
 
       lk.unlock();
 
-      if (!exit && searching)
+      if (!exit && td->searching)
           search();
   }
+  td = 0;
 }
 
 
@@ -225,7 +232,7 @@ int64_t ThreadPool::nodes_searched() {
 
   int64_t nodes = 0;
   for (Thread *th : *this)
-      nodes += th->rootPos.nodes_searched();
+      nodes += th->td->rootPos.nodes_searched();
   return nodes;
 }
 
@@ -240,8 +247,8 @@ void ThreadPool::start_thinking(const Position& pos, const LimitsType& limits,
   Signals.stopOnPonderhit = Signals.firstRootMove = false;
   Signals.stop = Signals.failedLowAtRoot = false;
 
-  main()->rootMoves.clear();
-  main()->rootPos = pos;
+  main()->td->rootMoves.clear();
+  main()->td->rootPos = pos;
   Limits = limits;
   if (states.get()) // If we don't set a new position, preserve current state
   {
@@ -252,7 +259,7 @@ void ThreadPool::start_thinking(const Position& pos, const LimitsType& limits,
   for (const auto& m : MoveList<LEGAL>(pos))
       if (   limits.searchmoves.empty()
           || std::count(limits.searchmoves.begin(), limits.searchmoves.end(), m))
-          main()->rootMoves.push_back(RootMove(m));
+          main()->td->rootMoves.push_back(RootMove(m));
 
   main()->thinking = true;
   main()->notify_one(); // Wake up main thread: 'thinking' must be already set

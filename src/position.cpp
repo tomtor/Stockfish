@@ -193,7 +193,7 @@ void Position::clear() {
 /// This function is not very robust - make sure that input FENs are correct,
 /// this is assumed to be the responsibility of the GUI.
 
-void Position::set(const string& fenStr, bool isChess960, Thread* th) {
+void Position::set(const string& fenStr, bool isChess960, ThreadData* th) {
 /*
    A FEN string defines a particular position using only the ASCII character set.
 
