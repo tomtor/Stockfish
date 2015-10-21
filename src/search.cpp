@@ -396,8 +396,8 @@ void Thread::search(bool isMainThread) {
           if (td->depth >= 5 * ONE_PLY)
           {
               delta = Value(18);
-              alpha = std::max(td->rootMoves[PVIdx].previousScore - delta,-VALUE_INFINITE);
-              beta  = std::min(td->rootMoves[PVIdx].previousScore + delta, VALUE_INFINITE);
+              alpha = std::max(td->rootMoves[td->PVIdx].previousScore - delta,-VALUE_INFINITE);
+              beta  = std::min(td->rootMoves[td->PVIdx].previousScore + delta, VALUE_INFINITE);
           }
 
           // Start with a small aspiration window and, in the case of a fail
