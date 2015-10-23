@@ -685,7 +685,7 @@ namespace {
     }
 
     // Penalty/bonus for approaching draw
-    {
+    if (depth <= ONE_PLY){
         int adjust50 = pos.rule50_count();
         if (eval > VALUE_DRAW) {
             eval -= adjust50;
