@@ -684,6 +684,18 @@ namespace {
         tte->save(posKey, VALUE_NONE, BOUND_NONE, DEPTH_NONE, MOVE_NONE, ss->staticEval, TT.generation());
     }
 
+    // Penalty/bonus for approaching draw
+    {
+        int adjust50 = pos.rule50_count();
+        if (eval > VALUE_DRAW) {
+            eval -= adjust50;
+            eval = std::max(VALUE_DRAW, eval);
+        } else {
+            eval += adjust50;
+            eval = std::min(VALUE_DRAW, eval);
+        }
+    }
+
     if (ss->skipEarlyPruning)
         goto moves_loop;
 
