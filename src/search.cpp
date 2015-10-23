@@ -686,7 +686,7 @@ namespace {
 
     // Penalty/bonus for approaching draw
     if (depth <= ONE_PLY){
-        int adjust50 = pos.rule50_count() / 2;
+        int adjust50 = pos.rule50_count() * 2;
         if (eval > VALUE_DRAW) {
             eval -= adjust50;
             eval = std::max(VALUE_DRAW, eval);
