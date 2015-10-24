@@ -685,7 +685,7 @@ namespace {
     }
 
     // Penalty/bonus for approaching draw
-    if (depth <= ONE_PLY){
+    if (depth <= ONE_PLY && std::abs(eval) > PawnValueMg / 2){
         int adjust50 = pos.rule50_count() * 3;
         if (eval > VALUE_DRAW) {
             eval -= adjust50;
