@@ -684,18 +684,6 @@ namespace {
         tte->save(posKey, VALUE_NONE, BOUND_NONE, DEPTH_NONE, MOVE_NONE, ss->staticEval, TT.generation());
     }
 
-    // Penalty/bonus for approaching draw
-    if (depth <= ONE_PLY) {
-        int adjust50 = pos.rule50_count() * 3 * std::min(PawnValueMg, Value(std::abs(eval))) / PawnValueMg;
-        if (eval > VALUE_DRAW) {
-            eval -= adjust50;
-            eval = std::max(VALUE_DRAW, eval);
-        } else {
-            eval += adjust50;
-            eval = std::min(VALUE_DRAW, eval);
-        }
-    }
-
     if (ss->skipEarlyPruning)
         goto moves_loop;
 
@@ -1200,6 +1188,14 @@ moves_loop: // When in check search starts from here
         else
             ss->staticEval = bestValue =
             (ss-1)->currentMove != MOVE_NULL ? evaluate(pos) : -(ss-1)->staticEval + 2 * Eval::Tempo;
+
+        // Penalty/bonus for approaching draw
+
+        int adjust50 = pos.rule50_count() * 3;
+        if (bestValue > VALUE_DRAW)
+            bestValue = std::max(VALUE_DRAW, bestValue - adjust50);
+        else
+            bestValue = std::min(VALUE_DRAW, bestValue + adjust50);
 
         // Stand pat. Return immediately if static value is at least beta
         if (bestValue >= beta)
