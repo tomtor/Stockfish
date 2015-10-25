@@ -684,15 +684,6 @@ namespace {
         tte->save(posKey, VALUE_NONE, BOUND_NONE, DEPTH_NONE, MOVE_NONE, ss->staticEval, TT.generation());
     }
 
-    // Penalty/bonus for approaching draw
-    if (depth <= ONE_PLY) {
-        int adjust50 = pos.rule50_count() * 3;
-        if (bestValue > VALUE_DRAW)
-            bestValue = std::max(VALUE_DRAW, bestValue - adjust50);
-        else
-            bestValue = std::min(VALUE_DRAW, bestValue + adjust50);
-    }
-
     if (ss->skipEarlyPruning)
         goto moves_loop;
 
