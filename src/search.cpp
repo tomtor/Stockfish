@@ -1200,7 +1200,7 @@ moves_loop: // When in check search starts from here
         }
 
         // Penalty/bonus for approaching draw
-        int adjust50 = pos.rule50_count() * 3;
+        int adjust50 = pos.rule50_count() * 2;
         if (bestValue > VALUE_DRAW)
             bestValue = std::max(VALUE_DRAW, bestValue - adjust50);
         else
