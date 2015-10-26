@@ -1030,6 +1030,10 @@ Value Position::see(Move m) const {
   if (!stmAttackers)
       return swapList[0];
 
+  // exchange of last pawn
+  if (type_of(moved_piece(m)) == PAWN && count<PAWN>(sideToMove) == 1)
+      return -PawnValueEg;
+
   // The destination square is defended, which makes things rather more
   // difficult to compute. We proceed by building up a "swap list" containing
   // the material gain or loss at each stop in a sequence of captures to the
