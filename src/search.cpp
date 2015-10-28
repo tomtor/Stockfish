@@ -132,6 +132,7 @@ namespace {
   double BestMoveChanges;
   Value DrawValue[COLOR_NB];
   CounterMovesHistoryStats CounterMovesHistory;
+  std::atomic<TimePoint> lastTick;
 
   template <NodeType NT>
   Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, bool cutNode);
@@ -227,6 +228,7 @@ template uint64_t Search::perft<true>(Position& pos, Depth depth);
 
 void MainThread::think() {
 
+  lastTick = now();
   Color us = rootPos.side_to_move();
   Time.init(Limits, us, rootPos.game_ply());
 
@@ -573,7 +575,7 @@ namespace {
     ss->ply = (ss-1)->ply + 1;
 
     // Check for available remaining time
-    if (depth > 5 * ONE_PLY && thisThread == Threads.main())
+    if (depth > 3 * ONE_PLY)
         check_time();
 
     // Used to send selDepth info to GUI
@@ -1561,19 +1563,18 @@ bool RootMove::extract_ponder_from_tt(Position& pos)
 
 void check_time() {
 
-  static TimePoint lastTick = now();
   static TimePoint lastInfoTime = now();
 
   TimePoint tick = now();
+  auto delta = tick - lastTick.load(std::memory_order_relaxed);
 
-  if (   Limits.startTime < lastTick
-      && tick - lastTick < 5)  // Don't check below 5ms from last one
+  if (delta < 5)  // Don't check below 5ms from last one
       return;
 
-  if (tick - lastTick > 10 && Limits.startTime < lastTick)
-      std::cerr << "Tick: " << (tick - lastTick) << " ms" << std::endl;
-
   lastTick = tick;
+
+  if (delta > 6)
+      std::cerr << "Tick: " << delta << " ms" << std::endl;
 
   int elapsed = Time.elapsed();
 
