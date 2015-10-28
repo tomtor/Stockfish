@@ -84,8 +84,7 @@ struct Thread : public ThreadBase {
 };
 
 
-/// MainThread and TimerThread are derived classes used to characterize the two
-/// special threads: the main one and the recurring timer.
+/// MainThread is a derived classes used to characterize the the main one
 
 struct MainThread : public Thread {
   MainThread() { thinking = true; } // Avoid a race with start_thinking()
@@ -93,15 +92,6 @@ struct MainThread : public Thread {
   void join();
   void think();
   std::atomic<bool> thinking;
-};
-
-struct TimerThread : public ThreadBase {
-
-  static const int Resolution = 5; // Millisec between two check_time() calls
-
-  virtual void idle_loop();
-
-  bool run = false;
 };
 
 
@@ -118,7 +108,6 @@ struct ThreadPool : public std::vector<Thread*> {
   void read_uci_options();
   void start_thinking(const Position&, const Search::LimitsType&, Search::StateStackPtr&);
   int64_t nodes_searched();
-  TimerThread* timer;
 };
 
 extern ThreadPool Threads;

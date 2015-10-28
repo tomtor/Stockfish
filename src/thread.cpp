@@ -29,8 +29,6 @@ using namespace Search;
 
 ThreadPool Threads; // Global object
 
-extern void check_time();
-
 namespace {
 
  // Helpers to launch a thread after creation and joining before delete. Must be
@@ -96,26 +94,6 @@ Thread::Thread() {
 }
 
 
-// TimerThread::idle_loop() is where the timer thread waits Resolution milliseconds
-// and then calls check_time(). When not searching, thread sleeps until it's woken up.
-
-void TimerThread::idle_loop() {
-
-  while (!exit)
-  {
-      std::unique_lock<Mutex> lk(mutex);
-
-      if (!exit)
-          sleepCondition.wait_for(lk, std::chrono::milliseconds(run ? Resolution : INT_MAX));
-
-      lk.unlock();
-
-      if (!exit && run)
-          check_time();
-  }
-}
-
-
 // Thread::idle_loop() is where the thread is parked when it has no work to do
 
 void Thread::idle_loop() {
@@ -176,7 +154,6 @@ void MainThread::join() {
 
 void ThreadPool::init() {
 
-  timer = new_thread<TimerThread>();
   push_back(new_thread<MainThread>());
   read_uci_options();
 }
@@ -186,9 +163,6 @@ void ThreadPool::init() {
 // done in d'tor because threads must be terminated before freeing us.
 
 void ThreadPool::exit() {
-
-  delete_thread(timer); // As first because check_time() accesses threads data
-  timer = nullptr;
 
   for (Thread* th : *this)
       delete_thread(th);

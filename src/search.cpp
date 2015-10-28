@@ -35,6 +35,8 @@
 #include "uci.h"
 #include "syzygy/tbprobe.h"
 
+void check_time();
+
 namespace Search {
 
   SignalsType Signals;
@@ -298,14 +300,10 @@ void MainThread::think() {
           }
       }
 
-      Threads.timer->run = true;
-      Threads.timer->notify_one(); // Start the recurring timer
-
       search(true); // Let's start searching!
 
-      // Stop the threads and the timer
+      // Stop the threads
       Signals.stop = true;
-      Threads.timer->run = false;
 
       // Wait until all threads have finished
       for (Thread* th : Threads)
@@ -574,6 +572,10 @@ namespace {
     bestValue = -VALUE_INFINITE;
     ss->ply = (ss-1)->ply + 1;
 
+    // Check for available remaining time
+    if (depth > 5 * ONE_PLY && thisThread == Threads.main())
+        check_time();
+
     // Used to send selDepth info to GUI
     if (PvNode && thisThread->maxPly < ss->ply)
         thisThread->maxPly = ss->ply;
@@ -582,7 +584,7 @@ namespace {
     {
         // Step 2. Check for aborted search and immediate draw
         if (Signals.stop.load(std::memory_order_relaxed) || pos.is_draw() || ss->ply >= MAX_PLY)
-            return ss->ply >= MAX_PLY && !inCheck ? evaluate(pos) 
+            return ss->ply >= MAX_PLY && !inCheck ? evaluate(pos)
                                                   : DrawValue[pos.side_to_move()];
 
         // Step 3. Mate distance pruning. Even if we mate at the next move our score
@@ -1554,18 +1556,26 @@ bool RootMove::extract_ponder_from_tt(Position& pos)
 }
 
 
-/// check_time() is called by the timer thread when the timer triggers. It is
-/// used to print debug info and, more importantly, to detect when we are out of
-/// available time and thus stop the search.
+/// check_time() is used to print debug info and, more importantly, to detect
+/// when we are out of available time and thus stop the search.
 
 void check_time() {
 
+  static TimePoint lastTick = now();
   static TimePoint lastInfoTime = now();
+
+  TimePoint tick = now();
+
+  if (tick - lastTick < 5) // Don't check below 5ms from last one
+      return;
+
+  lastTick = tick;
+
   int elapsed = Time.elapsed();
 
-  if (now() - lastInfoTime >= 1000)
+  if (tick - lastInfoTime >= 1000)
   {
-      lastInfoTime = now();
+      lastInfoTime = tick;
       dbg_print();
   }
 
@@ -1575,12 +1585,12 @@ void check_time() {
 
   if (Limits.use_time_management())
   {
-      bool stillAtFirstMove =    Signals.firstRootMove
-                             && !Signals.failedLowAtRoot
+      bool stillAtFirstMove =    Signals.firstRootMove.load(std::memory_order_relaxed)
+                             && !Signals.failedLowAtRoot.load(std::memory_order_relaxed)
                              &&  elapsed > Time.available() * 3 / 4;
 
       if (   stillAtFirstMove
-          || elapsed > Time.maximum() - 2 * TimerThread::Resolution)
+          || elapsed > Time.maximum() - 2 * 5)
           Signals.stop = true;
   }
   else if (Limits.movetime && elapsed >= Limits.movetime)
