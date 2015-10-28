@@ -1566,8 +1566,12 @@ void check_time() {
 
   TimePoint tick = now();
 
-  if (tick - lastTick < 5) // Don't check below 5ms from last one
+  if (   Limits.startTime < lastTick
+      && tick - lastTick < 5)  // Don't check below 5ms from last one
       return;
+
+  if (tick - lastTick > 10 && Limits.startTime < lastTick)
+      std::cerr << "Tick: " << (tick - lastTick) << " ms" << std::endl;
 
   lastTick = tick;
 
