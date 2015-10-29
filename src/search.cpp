@@ -575,7 +575,8 @@ namespace {
     ss->ply = (ss-1)->ply + 1;
 
     // Check for available remaining time
-    if (depth > 3 * ONE_PLY)
+    if (   !(pos.nodes_searched() & 4095)
+        && now() - lastTick.load(std::memory_order_relaxed) > 5)
         check_time();
 
     // Used to send selDepth info to GUI
@@ -1565,22 +1566,12 @@ void check_time() {
 
   static TimePoint lastInfoTime = now();
 
-  TimePoint tick = now();
-  auto delta = tick - lastTick.load(std::memory_order_relaxed);
-
-  if (delta < 5)  // Don't check below 5ms from last one
-      return;
-
-  lastTick = tick;
-
-  if (delta > 6)
-      std::cerr << "Tick: " << delta << " ms" << std::endl;
-
   int elapsed = Time.elapsed();
+  lastTick = Limits.startTime + elapsed;
 
-  if (tick - lastInfoTime >= 1000)
+  if (lastTick - lastInfoTime >= 1000)
   {
-      lastInfoTime = tick;
+      lastInfoTime = lastTick;
       dbg_print();
   }
 
