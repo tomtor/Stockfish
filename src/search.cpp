@@ -132,7 +132,6 @@ namespace {
   double BestMoveChanges;
   Value DrawValue[COLOR_NB];
   CounterMovesHistoryStats CounterMovesHistory;
-  std::atomic<TimePoint> lastTick;
 
   template <NodeType NT>
   Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, bool cutNode);
@@ -228,7 +227,6 @@ template uint64_t Search::perft<true>(Position& pos, Depth depth);
 
 void MainThread::think() {
 
-  lastTick = now();
   Color us = rootPos.side_to_move();
   Time.init(Limits, us, rootPos.game_ply());
 
@@ -576,7 +574,7 @@ namespace {
 
     // Check for available remaining time
     if (   !(pos.nodes_searched() & 4095)
-        && now() - lastTick.load(std::memory_order_relaxed) > 5)
+        && !((pos.nodes_searched() >> 12) % Threads.size()))
         check_time();
 
     // Used to send selDepth info to GUI
@@ -1567,11 +1565,11 @@ void check_time() {
   static TimePoint lastInfoTime = now();
 
   int elapsed = Time.elapsed();
-  lastTick = Limits.startTime + elapsed;
+  TimePoint tick = Limits.startTime + elapsed;
 
-  if (lastTick - lastInfoTime >= 1000)
+  if (tick - lastInfoTime >= 1000)
   {
-      lastInfoTime = lastTick;
+      lastInfoTime = tick;
       dbg_print();
   }
 
