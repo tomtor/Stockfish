@@ -573,8 +573,9 @@ namespace {
     ss->ply = (ss-1)->ply + 1;
 
     // Check for available remaining time
+    static int calls;
     if (   !(pos.nodes_searched() & 4095)
-        && !((pos.nodes_searched() >> 12) % Threads.size()))
+        && !(++calls % Threads.size()))
         check_time();
 
     // Used to send selDepth info to GUI
