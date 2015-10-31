@@ -32,6 +32,7 @@
 #include "pawns.h"
 #include "position.h"
 #include "search.h"
+#include "tt.h"
 #include "thread_win32.h"
 
 
@@ -77,7 +78,10 @@ struct Thread : public ThreadBase {
   HistoryStats history;
   MovesStats counterMoves;
   Depth completedDepth;
+  TranspositionTable tt;
 };
+
+const int TTD = 4;
 
 
 /// MainThread is a derived classes used to characterize the the main one
