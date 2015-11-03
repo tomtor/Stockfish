@@ -110,7 +110,7 @@ namespace {
   enum { Mobility, PawnStructure, PassedPawns, Space, KingSafety };
 
   const struct Weight { int mg, eg; } Weights[] = {
-    {289, 344}, {233, 201}, {221, 273}, {46, 0}, {322, 0}
+    {257, 344}, {233, 201}, {221, 273}, {46, 0}, {322, 0}
   };
 
   Score operator*(Score s, const Weight& w) {
@@ -745,7 +745,11 @@ Value Eval::evaluate(const Position& pos) {
 
   // Evaluate pieces and mobility
   score += evaluate_pieces<KNIGHT, WHITE, DoTrace>(pos, ei, mobility, mobilityArea);
-  score += (mobility[WHITE] - mobility[BLACK]) * Weights[Mobility];
+  Score mob = mobility[WHITE] - mobility[BLACK];
+  if (   2 * mg_value(mobility[WHITE]) >= 3 * mg_value(mobility[BLACK])
+      || 2 * mg_value(mobility[BLACK]) >= 3 * mg_value(mobility[WHITE]) )
+      mob = make_score(mg_value(mob) + mg_value(mob) / 4, eg_value(mob));
+  score += mob * Weights[Mobility];
 
   // Evaluate kings after all other pieces because we need complete attack
   // information when computing the king safety evaluation.
