@@ -32,7 +32,6 @@
 #include "pawns.h"
 #include "position.h"
 #include "search.h"
-#include "tt.h"
 #include "thread_win32.h"
 
 
@@ -78,7 +77,6 @@ struct Thread : public ThreadBase {
   HistoryStats history;
   MovesStats counterMoves;
   Depth completedDepth;
-  TranspositionTable tt;
 };
 
 

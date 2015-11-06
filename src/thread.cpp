@@ -90,7 +90,6 @@ Thread::Thread() {
   maxPly = callsCnt = 0;
   history.clear();
   counterMoves.clear();
-  tt.resizeK(16);
   idx = Threads.size(); // Starts from 0
 }
 

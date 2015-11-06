@@ -31,12 +31,8 @@ TranspositionTable TT; // Our global transposition table
 /// of clusters and each cluster consists of ClusterSize number of TTEntry.
 
 void TranspositionTable::resize(size_t mbSize) {
-  resizeK(mbSize * 1024);
-}
 
-void TranspositionTable::resizeK(size_t kbSize) {
-
-  size_t newClusterCount = size_t(1) << msb((kbSize * 1024) / sizeof(Cluster));
+  size_t newClusterCount = size_t(1) << msb((mbSize * 1024 * 1024) / sizeof(Cluster));
 
   if (newClusterCount == clusterCount)
       return;
@@ -48,8 +44,8 @@ void TranspositionTable::resizeK(size_t kbSize) {
 
   if (!mem)
   {
-      std::cerr << "Failed to allocate " << kbSize
-                << "kB for transposition table." << std::endl;
+      std::cerr << "Failed to allocate " << mbSize
+                << "MB for transposition table." << std::endl;
       exit(EXIT_FAILURE);
   }
 
@@ -78,13 +74,6 @@ TTEntry* TranspositionTable::probe(const Key key, bool& found) const {
 
   TTEntry* const tte = first_entry(key);
   const uint16_t key16 = key >> 48;  // Use the high 16 bits as key inside the cluster
-
-  if (clusterCount < 1000) {
-      for (int i = 0; i < ClusterSize; ++i)
-            if (!tte[i].key16 || tte[i].key16 == key16)
-                return found = (bool)tte[i].key16, &tte[i];
-      return found = false, &tte[key16 % ClusterSize];
-  }
 
   for (int i = 0; i < ClusterSize; ++i)
       if (!tte[i].key16 || tte[i].key16 == key16)

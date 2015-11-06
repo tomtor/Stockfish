@@ -98,7 +98,6 @@ public:
   TTEntry* probe(const Key key, bool& found) const;
   int hashfull() const;
   void resize(size_t mbSize);
-  void resizeK(size_t kbSize);
   void clear();
 
   // The lowest order bits of the key are used to get the index of the cluster
