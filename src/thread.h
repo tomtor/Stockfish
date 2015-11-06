@@ -81,8 +81,6 @@ struct Thread : public ThreadBase {
   TranspositionTable tt;
 };
 
-const int TTD = 4;
-
 
 /// MainThread is a derived classes used to characterize the the main one
 
