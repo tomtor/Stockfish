@@ -1188,7 +1188,7 @@ moves_loop: // When in check search starts from here
 
     // Transposition table lookup
     posKey = pos.key();
-    tte = depth < 0 ? ttHit = false, 0 : TT.probe(posKey, ttHit);
+    tte = depth < 0 ? ttHit = false, (TTEntry*)0 : TT.probe(posKey, ttHit);
     ttMove = ttHit ? tte->move() : MOVE_NONE;
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
 
