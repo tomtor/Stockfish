@@ -31,8 +31,12 @@ TranspositionTable TT; // Our global transposition table
 /// of clusters and each cluster consists of ClusterSize number of TTEntry.
 
 void TranspositionTable::resize(size_t mbSize) {
+  resizeK(mbSize * 1024);
+}
 
-  size_t newClusterCount = size_t(1) << msb((mbSize * 1024 * 1024) / sizeof(Cluster));
+void TranspositionTable::resizeK(size_t kbSize) {
+
+  size_t newClusterCount = size_t(1) << msb((kbSize * 1024) / sizeof(Cluster));
 
   if (newClusterCount == clusterCount)
       return;
@@ -44,8 +48,8 @@ void TranspositionTable::resize(size_t mbSize) {
 
   if (!mem)
   {
-      std::cerr << "Failed to allocate " << mbSize
-                << "MB for transposition table." << std::endl;
+      std::cerr << "Failed to allocate " << kbSize
+                << "kB for transposition table." << std::endl;
       exit(EXIT_FAILURE);
   }
 
