@@ -153,7 +153,7 @@ ifeq ($(COMP),gcc)
 	CXX=g++
 	CXXFLAGS += -pedantic -Wextra -Wshadow
 	ifneq ($(UNAME),Darwin)
-	   LDFLAGS += -Wl,--no-as-needed
+	   LDFLAGS += -Wl,--no-as-needed -latomic
 	endif
 endif
 

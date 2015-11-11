@@ -22,6 +22,7 @@
 
 #include "misc.h"
 #include "types.h"
+#include <atomic>
 
 /// TTEntry struct is the 10 bytes transposition table entry, defined as below:
 ///
@@ -41,6 +42,7 @@ struct TTEntry {
   Depth depth() const { return (Depth)depth8; }
   Bound bound() const { return (Bound)(genBound8 & 0x3); }
 
+  //void NASave(Key k, Value v, Bound b, Depth d, Move m, Value ev, uint8_t g) {
   void save(Key k, Value v, Bound b, Depth d, Move m, Value ev, uint8_t g) {
 
     // Preserve any existing move for the same position
@@ -60,6 +62,12 @@ struct TTEntry {
         depth8    = (int8_t)d;
     }
   }
+
+//  void save(Key k, Value v, Bound b, Depth d, Move m, Value ev, uint8_t g) {
+//        TTEntry tte;
+//        tte.NASave(k, v, b, d, m, ev, g);
+//        ((std::atomic<TTEntry> *) this)->store(tte, std::memory_order_relaxed);
+//  }
 
 private:
   friend class TranspositionTable;

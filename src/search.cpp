@@ -23,6 +23,7 @@
 #include <cstring>   // For std::memset
 #include <iostream>
 #include <sstream>
+#include <atomic>
 
 #include "evaluate.h"
 #include "misc.h"
@@ -631,17 +632,21 @@ namespace {
     excludedMove = ss->excludedMove;
     posKey = excludedMove ? pos.exclusion_key() : pos.key();
     tte = TT.probe(posKey, ttHit);
-    ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
+
+    //TTEntry tta = ((std::atomic<TTEntry> *) tte)->load(std::memory_order_relaxed);
+    TTEntry tta = *tte;
+
+    ttValue = ttHit ? value_from_tt(tta.value(), ss->ply) : VALUE_NONE;
     ss->ttMove = ttMove =  RootNode ? thisThread->rootMoves[thisThread->PVIdx].pv[0]
-                         : ttHit    ? tte->move() : MOVE_NONE;
+                         : ttHit    ? tta.move() : MOVE_NONE;
 
     // At non-PV nodes we check for an early TT cutoff
     if (  !PvNode
         && ttHit
-        && tte->depth() >= depth
+        && tta.depth() >= depth
         && ttValue != VALUE_NONE // Possible in case of TT access race
-        && (ttValue >= beta ? (tte->bound() & BOUND_LOWER)
-                            : (tte->bound() & BOUND_UPPER)))
+        && (ttValue >= beta ? (tta.bound() & BOUND_LOWER)
+                            : (tta.bound() & BOUND_UPPER)))
     {
         ss->currentMove = ttMove; // Can be MOVE_NONE
 
@@ -692,12 +697,12 @@ namespace {
     else if (ttHit)
     {
         // Never assume anything on values stored in TT
-        if ((ss->staticEval = eval = tte->eval()) == VALUE_NONE)
+        if ((ss->staticEval = eval = tta.eval()) == VALUE_NONE)
             eval = ss->staticEval = evaluate(pos);
 
         // Can ttValue be used as a better position evaluation?
         if (ttValue != VALUE_NONE)
-            if (tte->bound() & (ttValue > eval ? BOUND_LOWER : BOUND_UPPER))
+            if (tta.bound() & (ttValue > eval ? BOUND_LOWER : BOUND_UPPER))
                 eval = ttValue;
     }
     else
@@ -840,8 +845,8 @@ moves_loop: // When in check search starts from here
                        /*  &&  ttValue != VALUE_NONE Already implicit in the next condition */
                            &&  abs(ttValue) < VALUE_KNOWN_WIN
                            && !excludedMove // Recursive singular search is not allowed
-                           && (tte->bound() & BOUND_LOWER)
-                           &&  tte->depth() >= depth - 3 * ONE_PLY;
+                           && (tta.bound() & BOUND_LOWER)
+                           &&  tta.depth() >= depth - 3 * ONE_PLY;
 
     // Step 11. Loop through moves
     // Loop through all pseudo-legal moves until no moves remain or a beta cutoff occurs
@@ -1189,15 +1194,19 @@ moves_loop: // When in check search starts from here
     // Transposition table lookup
     posKey = pos.key();
     tte = TT.probe(posKey, ttHit);
-    ttMove = ttHit ? tte->move() : MOVE_NONE;
-    ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
+
+    //TTEntry tta = ((std::atomic<TTEntry> *) tte)->load(std::memory_order_relaxed);
+    TTEntry tta = *tte;
+
+    ttMove = ttHit ? tta.move() : MOVE_NONE;
+    ttValue = ttHit ? value_from_tt(tta.value(), ss->ply) : VALUE_NONE;
 
     if (  !PvNode
         && ttHit
-        && tte->depth() >= ttDepth
+        && tta.depth() >= ttDepth
         && ttValue != VALUE_NONE // Only in case of TT access race
-        && (ttValue >= beta ? (tte->bound() &  BOUND_LOWER)
-                            : (tte->bound() &  BOUND_UPPER)))
+        && (ttValue >= beta ? (tta.bound() &  BOUND_LOWER)
+                            : (tta.bound() &  BOUND_UPPER)))
     {
         ss->currentMove = ttMove; // Can be MOVE_NONE
         return ttValue;
@@ -1214,12 +1223,12 @@ moves_loop: // When in check search starts from here
         if (ttHit)
         {
             // Never assume anything on values stored in TT
-            if ((ss->staticEval = bestValue = tte->eval()) == VALUE_NONE)
+            if ((ss->staticEval = bestValue = tta.eval()) == VALUE_NONE)
                 ss->staticEval = bestValue = evaluate(pos);
 
             // Can ttValue be used as a better position evaluation?
             if (ttValue != VALUE_NONE)
-                if (tte->bound() & (ttValue > bestValue ? BOUND_LOWER : BOUND_UPPER))
+                if (tta.bound() & (ttValue > bestValue ? BOUND_LOWER : BOUND_UPPER))
                     bestValue = ttValue;
         }
         else
