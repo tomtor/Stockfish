@@ -633,8 +633,7 @@ namespace {
     posKey = excludedMove ? pos.exclusion_key() : pos.key();
     tte = TT.probe(posKey, ttHit);
 
-    //TTEntry tta = ((std::atomic<TTEntry> *) tte)->load(std::memory_order_relaxed);
-    TTEntry tta = *tte;
+    TTEntry tta = ((std::atomic<TTEntry> *) tte)->load(std::memory_order_relaxed);
 
     ttValue = ttHit ? value_from_tt(tta.value(), ss->ply) : VALUE_NONE;
     ss->ttMove = ttMove =  RootNode ? thisThread->rootMoves[thisThread->PVIdx].pv[0]
@@ -1195,8 +1194,7 @@ moves_loop: // When in check search starts from here
     posKey = pos.key();
     tte = TT.probe(posKey, ttHit);
 
-    //TTEntry tta = ((std::atomic<TTEntry> *) tte)->load(std::memory_order_relaxed);
-    TTEntry tta = *tte;
+    TTEntry tta = ((std::atomic<TTEntry> *) tte)->load(std::memory_order_relaxed);
 
     ttMove = ttHit ? tta.move() : MOVE_NONE;
     ttValue = ttHit ? value_from_tt(tta.value(), ss->ply) : VALUE_NONE;
