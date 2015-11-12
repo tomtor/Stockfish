@@ -42,8 +42,7 @@ struct TTEntry {
   Depth depth() const { return (Depth)depth8; }
   Bound bound() const { return (Bound)(genBound8 & 0x3); }
 
-  //void NASave(Key k, Value v, Bound b, Depth d, Move m, Value ev, uint8_t g) {
-  void save(Key k, Value v, Bound b, Depth d, Move m, Value ev, uint8_t g) {
+  void NASave(Key k, Value v, Bound b, Depth d, Move m, Value ev, uint8_t g) {
 
     // Preserve any existing move for the same position
     if (m || (k >> 48) != key16)
@@ -63,11 +62,11 @@ struct TTEntry {
     }
   }
 
-//  void save(Key k, Value v, Bound b, Depth d, Move m, Value ev, uint8_t g) {
-//        TTEntry tte;
-//        tte.NASave(k, v, b, d, m, ev, g);
-//        ((std::atomic<TTEntry> *) this)->store(tte, std::memory_order_relaxed);
-//  }
+  void save(Key k, Value v, Bound b, Depth d, Move m, Value ev, uint8_t g) {
+        TTEntry tte;
+        tte.NASave(k, v, b, d, m, ev, g);
+        ((std::atomic<TTEntry> *) this)->store(tte, std::memory_order_relaxed);
+  }
 
 private:
   friend class TranspositionTable;
