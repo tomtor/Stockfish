@@ -25,51 +25,51 @@
 
 /// TTEntry struct is the 10 bytes transposition table entry, defined as below:
 ///
-/// key        16 bit
+/// key        32 bit
 /// move       16 bit
 /// value      16 bit
 /// eval value 16 bit
 /// generation  6 bit
 /// bound type  2 bit
-/// depth       8 bit
+/// depth      16 bit
 
 struct TTEntry {
 
   Move  move()  const { return (Move )move16; }
   Value value() const { return (Value)value16; }
   Value eval()  const { return (Value)eval16; }
-  Depth depth() const { return (Depth)depth8; }
+  Depth depth() const { return (Depth)depth16; }
   Bound bound() const { return (Bound)(genBound8 & 0x3); }
 
   void save(Key k, Value v, Bound b, Depth d, Move m, Value ev, uint8_t g) {
 
     // Preserve any existing move for the same position
-    if (m || (k >> 48) != key16)
+    if (m || (k >> 32) != key32)
         move16 = (uint16_t)m;
 
     // Don't overwrite more valuable entries
-    if (  (k >> 48) != key16
-        || d > depth8 - 2
+    if (  (k >> 32) != key32
+        || d > depth16 - 2
      /* || g != (genBound8 & 0xFC) // Matching non-zero keys are already refreshed by probe() */
         || b == BOUND_EXACT)
     {
-        key16     = (uint16_t)(k >> 48);
+        key32     = (uint32_t)(k >> 32);
         value16   = (int16_t)v;
         eval16    = (int16_t)ev;
         genBound8 = (uint8_t)(g | b);
-        depth8    = (int8_t)d;
+        depth16    = (int16_t)d;
     }
   }
 
 private:
   friend class TranspositionTable;
 
-  uint16_t key16;
+  uint32_t key32;
   uint16_t move16;
   int16_t  value16;
   int16_t  eval16;
+  int16_t  depth16;
   uint8_t  genBound8;
-  int8_t   depth8;
 };
 
 
@@ -82,11 +82,11 @@ private:
 class TranspositionTable {
 
   static const int CacheLineSize = 64;
-  static const int ClusterSize = 3;
+  static const int ClusterSize = 2;
 
   struct Cluster {
     TTEntry entry[ClusterSize];
-    char padding[2]; // Align to the cache line size
+    //char padding[0]; // Align to the cache line size
   };
 
   static_assert(sizeof(Cluster) == CacheLineSize / 2, "Cluster size incorrect");
