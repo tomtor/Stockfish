@@ -43,8 +43,8 @@ struct TTEntry {
 
   void save(Key k, Value v, Bound b, Depth d, Move m, Value ev, uint8_t g) {
 
-    // Replace move if we overwrite entry or if we have none
-    if ((k >> 48) != key16 || !move16)
+    // Replace move if we overwrite entry or if we have one with near same depth
+    if ((k >> 48) != key16 || (m && d >= depth8 - 2))
         move16 = (uint16_t)m;
 
     // Don't overwrite more valuable entries
@@ -53,10 +53,6 @@ struct TTEntry {
      /* || g != (genBound8 & 0xFC) // Matching non-zero keys are already refreshed by probe() */
         || b == BOUND_EXACT)
     {
-        // Only overwrite move if we have a better one
-        if (m)
-            move16 = (uint16_t)m;
-
         key16     = (uint16_t)(k >> 48);
         value16   = (int16_t)v;
         eval16    = (int16_t)ev;
