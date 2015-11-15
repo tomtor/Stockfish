@@ -63,7 +63,7 @@ struct TTEntry {
   }
 
   void save(Key k, Value v, Bound b, Depth d, Move m, Value ev, uint8_t g) {
-        TTEntry tte;
+        TTEntry tte= ((std::atomic<TTEntry> *) this)->load(std::memory_order_relaxed);
         tte.NASave(k, v, b, d, m, ev, g);
         ((std::atomic<TTEntry> *) this)->store(tte, std::memory_order_relaxed);
   }
