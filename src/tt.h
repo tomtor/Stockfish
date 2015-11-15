@@ -53,23 +53,23 @@ struct TTEntry {
         if (m || uint16_t((k >> 48) ^ move16) != key16)
             move16 = (uint16_t)m;
 
-        key16     = (uint16_t)((k >> 48) ^ move16);
         value16   = (int16_t)v;
         eval16    = (int16_t)ev;
         genBound8 = (uint8_t)(g | b);
         depth8    = (int8_t)d;
+        key16     = (uint16_t)((k >> 48) ^ move16);
     }
   }
 
 private:
   friend class TranspositionTable;
 
-  uint16_t key16;
   uint16_t move16;
   int16_t  value16;
   int16_t  eval16;
   uint8_t  genBound8;
   int8_t   depth8;
+  uint16_t key16;
 };
 
 
