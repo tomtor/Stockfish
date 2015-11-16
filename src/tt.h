@@ -41,23 +41,26 @@ struct TTEntry {
   Depth depth() const { return (Depth)depth8; }
   Bound bound() const { return (Bound)(genBound8 & 0x3); }
 
+  // Used an EOR check for race detection
+  uint16_t cs()  const { return move16 ^ eval16; }
+
   void save(Key k, Value v, Bound b, Depth d, Move m, Value ev, uint8_t g) {
 
     // Don't overwrite more valuable entries
-    if (  uint16_t((k >> 48) ^ move16) != key16
+    if (  uint16_t((k >> 48) ^ cs()) != key16
         || d > depth8 - 2
      /* || g != (genBound8 & 0xFC) // Matching non-zero keys are already refreshed by probe() */
         || b == BOUND_EXACT)
     {
         // Replace move if we overwrite entry or if we have a better one
-        if (m || uint16_t((k >> 48) ^ move16) != key16)
+        if (m || uint16_t((k >> 48) ^ cs()) != key16)
             move16 = (uint16_t)m;
 
         value16   = (int16_t)v;
         eval16    = (int16_t)ev;
         genBound8 = (uint8_t)(g | b);
         depth8    = (int8_t)d;
-        key16     = (uint16_t)((k >> 48) ^ move16);
+        key16     = (uint16_t)((k >> 48) ^ cs());
     }
   }
 
