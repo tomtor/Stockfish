@@ -870,7 +870,9 @@ moves_loop: // When in check search starts from here
                   : pos.gives_check(move, ci);
 
       moveCountPruning =   depth < 16 * ONE_PLY
-                        && moveCount >= FutilityMoveCounts[improving][depth];
+                        && moveCount >= FutilityMoveCounts[improving][depth] +
+				(PvNode && abs(ss->staticEval - eval) < PawnValueMg/2);
+
 
       // Step 12. Extend checks
       if (    givesCheck
