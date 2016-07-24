@@ -871,7 +871,7 @@ moves_loop: // When in check search starts from here
 
       moveCountPruning =   depth < 16 * ONE_PLY
                         && moveCount >= FutilityMoveCounts[improving][depth] +
-				(PvNode && abs(ss->staticEval - eval) < PawnValueMg/2);
+				(depth >= 8 * ONE_PLY && abs(ss->staticEval - eval) < PawnValueMg/2);
 
 
       // Step 12. Extend checks
