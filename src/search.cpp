@@ -1238,7 +1238,8 @@ moves_loop: // When in check search starts from here
         if (PvNode && bestValue > alpha)
             alpha = bestValue;
 
-        futilityBase = bestValue + 128;
+        futilityBase = bestValue +
+            (pos.non_pawn_material(WHITE) + pos.non_pawn_material(BLACK) >= 2 * RookValueMg ? 128 : 200);
     }
 
     // Initialize a MovePicker object for the current position, and prepare
