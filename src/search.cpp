@@ -1238,7 +1238,7 @@ moves_loop: // When in check search starts from here
         if (PvNode && bestValue > alpha)
             alpha = bestValue;
 
-        futilityBase = bestValue + 160;
+        futilityBase = bestValue + 178;
     }
 
     // Initialize a MovePicker object for the current position, and prepare
