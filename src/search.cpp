@@ -1238,12 +1238,7 @@ moves_loop: // When in check search starts from here
         if (PvNode && bestValue > alpha)
             alpha = bestValue;
 
-        futilityBase = bestValue;
-        if (   pos.non_pawn_material(WHITE) + pos.non_pawn_material(BLACK) <= 4 * BishopValueMg
-            && pos.non_pawn_material(WHITE) != RookValueMg && pos.non_pawn_material(BLACK) != RookValueMg)
-            futilityBase += 170;
-        else
-            futilityBase += 110;
+        futilityBase = bestValue + 160;
     }
 
     // Initialize a MovePicker object for the current position, and prepare
