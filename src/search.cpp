@@ -1131,6 +1131,8 @@ moves_loop: // When in check search starts from here
     return bestValue;
   }
 
+int fbmargin = 180;
+TUNE(fbmargin);
 
   // qsearch() is the quiescence search function, which is called by the main
   // search function when the remaining depth is zero (or, to be more precise,
@@ -1232,7 +1234,7 @@ moves_loop: // When in check search starts from here
         if (PvNode && bestValue > alpha)
             alpha = bestValue;
 
-        futilityBase = bestValue + 128;
+        futilityBase = bestValue + fbmargin;
     }
 
     // Initialize a MovePicker object for the current position, and prepare
