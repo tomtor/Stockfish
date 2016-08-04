@@ -174,6 +174,19 @@ namespace {
 } // namespace
 
 
+Value drawEval(Position &pos) {
+	Value v= evaluate(pos), rv= v/32;
+	if (rv < 0 || rv > 0)
+		return rv;
+	else if (v > 0)
+		return Value(1);
+	else if (v < 0)
+		return Value(-1);
+	else
+		return Value(0);
+}
+
+
 /// Search::init() is called during startup to initialize various lookup tables
 
 void Search::init() {
@@ -594,7 +607,7 @@ namespace {
         // Step 2. Check for aborted search and immediate draw
         if (Signals.stop.load(std::memory_order_relaxed) || pos.is_draw() || ss->ply >= MAX_PLY)
             return ss->ply >= MAX_PLY && !inCheck ? evaluate(pos)
-                                                  : DrawValue[pos.side_to_move()] + evaluate(pos) / 32;
+                                                  : DrawValue[pos.side_to_move()] + drawEval(pos);
 
         // Step 3. Mate distance pruning. Even if we mate at the next move our score
         // would be at best mate_in(ss->ply+1), but if alpha is already bigger because
@@ -1176,7 +1189,7 @@ moves_loop: // When in check search starts from here
     // Check for an instant draw or if the maximum ply has been reached
     if (pos.is_draw() || ss->ply >= MAX_PLY)
         return ss->ply >= MAX_PLY && !InCheck ? evaluate(pos)
-                                              : DrawValue[pos.side_to_move()] + evaluate(pos) / 32;
+                                              : DrawValue[pos.side_to_move()] + drawEval(pos);
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 
