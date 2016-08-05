@@ -174,6 +174,9 @@ namespace {
 } // namespace
 
 
+int A = 200, B = 170;
+TUNE(A, B);
+
 /// Search::init() is called during startup to initialize various lookup tables
 
 void Search::init() {
@@ -926,8 +929,8 @@ moves_loop: // When in check search starts from here
           predictedDepth = std::max(newDepth - reduction<PvNode>(improving, depth, moveCount), DEPTH_ZERO);
 
           // Futility pruning: parent node
-          if (   predictedDepth < 7 * ONE_PLY
-              && ss->staticEval + 256 + 200 * predictedDepth / ONE_PLY <= alpha)
+          if (   predictedDepth < 8 * ONE_PLY
+              && ss->staticEval + 256 + (PvNode ? A : B) * predictedDepth / ONE_PLY <= alpha)
               continue;
 
           // Prune moves with negative SEE at low depths and below a decreasing
