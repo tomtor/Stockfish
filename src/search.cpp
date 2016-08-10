@@ -721,12 +721,16 @@ namespace {
     }
 
     // Step 7. Futility pruning: child node (skipped when in check)
+    Value futMargin;
     if (   !rootNode
         &&  depth < 7 * ONE_PLY
-        &&  eval - futility_margin(depth) >= beta
+        &&  (futMargin = eval - (pos.non_pawn_material(pos.side_to_move()) ? futility_margin(depth) : futility_margin(depth) / 2)) >= beta
         &&  eval < VALUE_KNOWN_WIN  // Do not return unproven wins
-        &&  pos.non_pawn_material(pos.side_to_move()))
-        return eval - futility_margin(depth);
+        )
+        if (   pos.non_pawn_material(pos.side_to_move())
+            || (depth > 2 * ONE_PLY
+            && -search<NonPV>(pos, ss+1, -futMargin, -futMargin+1, ONE_PLY, false) >= futMargin))
+            return futMargin;
 
     // Step 8. Null move search with verification search (is omitted in PV nodes)
     if (   !PvNode
