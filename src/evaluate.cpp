@@ -590,6 +590,10 @@ namespace {
   }
 
 
+  int MGP = 256, EGP = 256;
+
+  TUNE(MGP, EGP);
+
   // evaluate_passed_pawns() evaluates the passed pawns of the given color
 
   template<Color Us, bool DoTrace>
@@ -660,7 +664,7 @@ namespace {
                 mbonus += rr + r * 2, ebonus += rr + r * 2;
         } // rr != 0
 
-        score += make_score(mbonus, ebonus) + PassedFile[file_of(s)];
+        score += make_score(MGP * mbonus / 256, EGP * ebonus / 256) + PassedFile[file_of(s)];
     }
 
     if (DoTrace)
