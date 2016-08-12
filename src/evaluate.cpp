@@ -660,7 +660,7 @@ namespace {
                 mbonus += rr + r * 2, ebonus += rr + r * 2;
         } // rr != 0
 
-        score += make_score(mbonus, ebonus) + PassedFile[file_of(s)];
+        score += make_score(245 * mbonus / 256, 259 * ebonus / 256) + PassedFile[file_of(s)];
     }
 
     if (DoTrace)
