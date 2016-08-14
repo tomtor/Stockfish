@@ -654,7 +654,7 @@ namespace {
                 else if (defendedSquares & blockSq)
                     k += 4;
 
-                mbonus += (k - 1) * rr, ebonus += (k + 1) * rr;
+                mbonus += (k - 1) * rr, ebonus += k * rr;
             }
             else if (pos.pieces(Us) & blockSq)
                 mbonus += rr + r * 2, ebonus += rr + r * 2;
