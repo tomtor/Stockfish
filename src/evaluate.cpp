@@ -590,6 +590,10 @@ namespace {
   }
 
 
+  int PPA = 5*16, PPB = 2*16, PPC = 1*16, PPD = 18, PPE= 8, PPF = 6, PPG = 4, PPH = 1*16, PPI = 1*16;
+
+  TUNE(PPA,PPB,PPC,PPD,PPE,PPF,PPG,PPH,PPI);
+
   // evaluate_passed_pawns() evaluates the passed pawns of the given color
 
   template<Color Us, bool DoTrace>
@@ -619,12 +623,12 @@ namespace {
             Square blockSq = s + pawn_push(Us);
 
             // Adjust bonus based on the king's proximity
-            ebonus +=  distance(pos.square<KING>(Them), blockSq) * 5 * rr
-                     - distance(pos.square<KING>(Us  ), blockSq) * 2 * rr;
+            ebonus +=  distance(pos.square<KING>(Them), blockSq) * PPA * rr / 16
+                     - distance(pos.square<KING>(Us  ), blockSq) * PPB * rr / 16;
 
             // If blockSq is not the queening square then consider also a second push
             if (relative_rank(Us, blockSq) != RANK_8)
-                ebonus -= distance(pos.square<KING>(Us), blockSq + pawn_push(Us)) * rr;
+                ebonus -= distance(pos.square<KING>(Us), blockSq + pawn_push(Us)) * PPC * rr / 16;
 
             // If the pawn is free to advance, then increase the bonus
             if (pos.empty(blockSq))
@@ -644,20 +648,20 @@ namespace {
 
                 // If there aren't any enemy attacks, assign a big bonus. Otherwise
                 // assign a smaller bonus if the block square isn't attacked.
-                int k = !unsafeSquares ? 18 : !(unsafeSquares & blockSq) ? 8 : 0;
+                int k = !unsafeSquares ? PPD: !(unsafeSquares & blockSq) ? PPE: 0;
 
                 // If the path to the queen is fully defended, assign a big bonus.
                 // Otherwise assign a smaller bonus if the block square is defended.
                 if (defendedSquares == squaresToQueen)
-                    k += 6;
+                    k += PPF;
 
                 else if (defendedSquares & blockSq)
-                    k += 4;
+                    k += PPG;
 
                 mbonus += k * rr, ebonus += k * rr;
             }
             else if (pos.pieces(Us) & blockSq)
-                mbonus += rr + r * 2, ebonus += rr + r * 2;
+                mbonus += PPH * rr / 16, ebonus += PPI * rr / 16;
         } // rr != 0
 
         score += make_score(mbonus, ebonus) + PassedFile[file_of(s)];
