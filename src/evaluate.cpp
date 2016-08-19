@@ -652,7 +652,7 @@ namespace {
                     k += 6;
 
                 else
-                    k += popcount(defendedSquares) + (defendedSquares & blockSq) * 3;
+                    k += popcount(defendedSquares) + ((defendedSquares & blockSq) ? 3 : 0);
 
                 mbonus += k * rr, ebonus += k * rr;
             }
