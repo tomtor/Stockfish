@@ -651,8 +651,8 @@ namespace {
                 if (defendedSquares == squaresToQueen)
                     k += 6;
 
-                else if (defendedSquares & blockSq)
-                    k += 4;
+                else
+                    k += popcount(defendedSquares) + (defendedSquares & blockSq) * 3;
 
                 mbonus += k * rr, ebonus += k * rr;
             }
