@@ -620,7 +620,11 @@ namespace {
 
             // Adjust bonus based on the king's proximity
             ebonus +=  distance(pos.square<KING>(Them), blockSq) * 5 * rr
-                     - distance(pos.square<KING>(Us  ), blockSq) * 7 * rr / 2;
+                     - distance(pos.square<KING>(Us  ), blockSq) * 2 * rr;
+
+            // If blockSq is not the queening square then consider also a second push
+            if (relative_rank(Us, blockSq) != RANK_8)
+                ebonus -= distance(pos.square<KING>(Us), blockSq + pawn_push(Us)) * rr;
 
             // If the pawn is free to advance, then increase the bonus
             if (pos.empty(blockSq))
@@ -653,7 +657,7 @@ namespace {
                 mbonus += k * rr, ebonus += k * rr;
             }
             else if (pos.pieces(Us) & blockSq)
-                mbonus += rr, ebonus += rr + r * 2;
+                mbonus += rr + r * 2, ebonus += rr + r * 2;
         } // rr != 0
 
         score += make_score(mbonus, ebonus) + PassedFile[file_of(s)];
@@ -754,9 +758,9 @@ namespace {
         // Endings where weaker side can place his king in front of the opponent's
         // pawns are drawish.
         else if (    abs(eg) <= BishopValueEg
-                 &&  ei.pi->pawn_span(strongSide) <= 1
+                 &&  pos.count<PAWN>(strongSide) <= 2
                  && !pos.pawn_passed(~strongSide, pos.square<KING>(~strongSide)))
-            sf = ei.pi->pawn_span(strongSide) ? ScaleFactor(51) : ScaleFactor(37);
+            sf = ScaleFactor(37 + 7 * pos.count<PAWN>(strongSide));
     }
 
     return sf;
