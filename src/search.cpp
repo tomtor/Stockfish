@@ -807,9 +807,8 @@ do_IID:
         && !ttMove
         && (PvNode || ss->staticEval + 256 >= beta))
     {
-	bool sep = ss->skipEarlyPruning;
         ss->skipEarlyPruning = true;
-        search<NT>(pos, ss, alpha, beta, sep ? depth / 2 : 3 * depth / 4 - 2 * ONE_PLY, cutNode);
+        search<NT>(pos, ss, alpha, beta, depth / 2, cutNode);
         ss->skipEarlyPruning = false;
 
         tte = TT.probe(posKey, ttHit);
