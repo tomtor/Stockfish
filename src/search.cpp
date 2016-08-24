@@ -702,7 +702,7 @@ namespace {
     }
 
     if (ss->skipEarlyPruning)
-        goto moves_loop;
+        goto do_IID;
 
     // Step 6. Razoring (skipped when in check)
     if (   !PvNode
@@ -800,13 +800,16 @@ namespace {
             }
     }
 
+do_IID:
+
     // Step 10. Internal iterative deepening (skipped when in check)
     if (    depth >= 6 * ONE_PLY
         && !ttMove
         && (PvNode || ss->staticEval + 256 >= beta))
     {
+	bool sep = ss->skipEarlyPruning;
         ss->skipEarlyPruning = true;
-        search<NT>(pos, ss, alpha, beta, 3 * depth / 4 - 2 * ONE_PLY, cutNode);
+        search<NT>(pos, ss, alpha, beta, sep ? depth / 2 : 3 * depth / 4 - 2 * ONE_PLY, cutNode);
         ss->skipEarlyPruning = false;
 
         tte = TT.probe(posKey, ttHit);
