@@ -820,7 +820,7 @@ namespace {
         && !ttMove
         && (PvNode || ss->staticEval + 256 >= beta))
     {
-        search<NT>(pos, ss, alpha, beta, depth / 2, cutNode);
+        search<NT>(pos, ss, alpha, beta, depth / 2 - ONE_PLY, cutNode);
 
         tte = TT.probe(posKey, ttHit);
         ttMove = ttHit ? tte->move() : MOVE_NONE;
