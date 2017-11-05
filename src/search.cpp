@@ -686,8 +686,7 @@ namespace {
     // Step 8. Null move search with verification search (is omitted in PV nodes)
     if (   !PvNode
         &&  eval >= beta
-        && (ss->staticEval >= beta - 35 * (depth / ONE_PLY - 6) || depth >= 13 * ONE_PLY)
-        &&  pos.non_pawn_material(pos.side_to_move()))
+        && (ss->staticEval >= beta - 35 * (depth / ONE_PLY - 6) || depth >= 13 * ONE_PLY))
     {
 
         assert(eval - beta >= 0);
@@ -709,7 +708,8 @@ namespace {
             if (nullValue >= VALUE_MATE_IN_MAX_PLY)
                 nullValue = beta;
 
-            if (depth < 12 * ONE_PLY && abs(beta) < VALUE_KNOWN_WIN)
+            if (   depth < 12 * ONE_PLY && abs(beta) < VALUE_KNOWN_WIN
+                && (thisThread->nodes & 0x1F))
                 return nullValue;
 
             // Do verification search at high depths
