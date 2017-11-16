@@ -71,12 +71,17 @@ namespace {
   const int razor_margin[] = { 0, 570, 603, 554 };
   Value futility_margin(Depth d) { return Value(150 * d / ONE_PLY); }
 
+  const int RedScale= 1000;
+  const int RDFrac= 25;
+  const int RDOffset= 105;
+
   // Futility and reductions lookup tables, initialized at startup
   int FutilityMoveCounts[2][16]; // [improving][depth]
   int Reductions[2][2][64][64];  // [pv][improving][depth][moveNumber]
 
-  template <bool PvNode> Depth reduction(bool i, Depth d, int mn) {
-    return Reductions[PvNode][i][std::min(d / ONE_PLY, 63)][std::min(mn, 63)] * ONE_PLY;
+  template <bool PvNode> Depth reduction(bool i, Depth d, int mn, Depth rd) {
+    return (int(Reductions[PvNode][i][std::min(d / ONE_PLY, 63)][std::min(mn, 63)]
+         - (rd * RedScale * 2 / RDFrac) + (RDOffset*RedScale/100)) + RedScale/2) * ONE_PLY / RedScale;
   }
 
   // History and stats update bonus, based on depth
@@ -151,12 +156,12 @@ void Search::init() {
           {
               double r = log(d) * log(mc) / 1.95;
 
-              Reductions[NonPV][imp][d][mc] = int(std::round(r));
-              Reductions[PV][imp][d][mc] = std::max(Reductions[NonPV][imp][d][mc] - 1, 0);
+              Reductions[NonPV][imp][d][mc] = int(std::round(r * RedScale));
+              Reductions[PV][imp][d][mc] = std::max(Reductions[NonPV][imp][d][mc] - 1 * RedScale, 0);
 
               // Increase reduction for non-PV nodes when eval is not improving
-              if (!imp && Reductions[NonPV][imp][d][mc] >= 2)
-                Reductions[NonPV][imp][d][mc]++;
+              if (!imp && Reductions[NonPV][imp][d][mc] >= 2 * RedScale - RedScale/2)
+                Reductions[NonPV][imp][d][mc]+= 1 * RedScale;
           }
 
   for (int d = 0; d < 16; ++d)
@@ -863,7 +868,7 @@ moves_loop: // When in check search starts from here
               }
 
               // Reduced depth of the next LMR search
-              int lmrDepth = std::max(newDepth - reduction<PvNode>(improving, depth, moveCount), DEPTH_ZERO) / ONE_PLY;
+              int lmrDepth = std::max(newDepth - reduction<PvNode>(improving, depth, moveCount, thisThread->rootDepth), DEPTH_ZERO) / ONE_PLY;
 
               // Countermoves based pruning
               if (   lmrDepth < 3
@@ -914,7 +919,7 @@ moves_loop: // When in check search starts from here
           &&  moveCount > 1
           && (!captureOrPromotion || moveCountPruning))
       {
-          Depth r = reduction<PvNode>(improving, depth, moveCount);
+          Depth r = reduction<PvNode>(improving, depth, moveCount, thisThread->rootDepth);
 
           if (captureOrPromotion)
               r -= r ? ONE_PLY : DEPTH_ZERO;
