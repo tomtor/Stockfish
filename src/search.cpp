@@ -73,14 +73,14 @@ namespace {
 
   const int RedScale= 1000;
   const int RDFrac= 25;
-  const int RDOffset= 120;
+  const int RDOffset= 100;
 
   // Futility and reductions lookup tables, initialized at startup
   int FutilityMoveCounts[2][16]; // [improving][depth]
   int Reductions[2][2][64][64];  // [pv][improving][depth][moveNumber]
 
   template <bool PvNode> Depth reduction(bool i, Depth d, int mn, Depth rd) {
-    return (int(Reductions[PvNode][i][std::min(d / ONE_PLY, 63)][std::min(mn, 63)]
+    return (std::max(0,Reductions[PvNode][i][std::min(d / ONE_PLY, 63)][std::min(mn, 63)]
          - (rd * RedScale * 2 / RDFrac) + (RDOffset*RedScale/100)) + RedScale/2) * ONE_PLY / RedScale;
   }
 
