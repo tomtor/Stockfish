@@ -73,7 +73,7 @@ namespace {
 
   const int RedScale= 1000;
   const int RDFrac= 25;
-  const int RDOffset= 105;
+  const int RDOffset= 120;
 
   // Futility and reductions lookup tables, initialized at startup
   int FutilityMoveCounts[2][16]; // [improving][depth]
