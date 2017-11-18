@@ -81,7 +81,7 @@ namespace {
 
   template <bool PvNode> Depth reduction(bool i, Depth d, int mn, Depth rd) {
     return (std::max(0,Reductions[PvNode][i][std::min(d / ONE_PLY, 63)][std::min(mn, 63)]
-         - (rd * RedScale * 2 / RDFrac) + (RDOffset*RedScale/100)) + RedScale/2) * ONE_PLY / RedScale;
+         + (rd * RedScale * 2 / RDFrac) - (RDOffset*RedScale/100)) + RedScale/2) * ONE_PLY / RedScale;
   }
 
   // History and stats update bonus, based on depth
