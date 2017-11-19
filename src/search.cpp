@@ -961,8 +961,7 @@ moves_loop: // When in check search starts from here
               // Decrease/increase reduction for moves with a good/bad history
               r = std::max(DEPTH_ZERO, (r / ONE_PLY - ss->statScore / 20000) * ONE_PLY);
 
-              if (r - base > 2 / ONE_PLY)
-            	  r += ONE_PLY;
+              r+= (r - base) / 2;
           }
 
           Depth d = std::max(newDepth - r, ONE_PLY);
