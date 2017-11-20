@@ -962,7 +962,7 @@ moves_loop: // When in check search starts from here
               r = std::max(DEPTH_ZERO, (r / ONE_PLY - ss->statScore / 20000) * ONE_PLY);
 
               // Adjust dynamic LMR total
-              r-= (r - base) / 3;
+              r-= (r - base) / 5;
           }
 
           Depth d = std::max(newDepth - r, ONE_PLY);
