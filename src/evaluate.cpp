@@ -663,10 +663,13 @@ namespace {
             Square blockSq = s + Up;
 
             // Adjust bonus based on the king's proximity
-            ebonus +=  distance(pos.square<KING>(Them), blockSq)
-                       * (6 - 1 * !!(forward_ranks_bb(Us, s) & pos.pieces(Them, KING))) * rr
-                     - distance(pos.square<KING>(  Us), blockSq)
-                       * (1 + 1 * !(forward_ranks_bb(Us, s) & pos.pieces(Us, KING))) * rr;
+            ebonus +=  distance(pos.square<KING>(Them), blockSq) * 5 * rr
+                     - distance(pos.square<KING>(  Us), blockSq) * 2 * rr;
+
+            // King support
+            Bitboard ka= forward_ranks_bb(Us, s - Up) & adjacent_files_bb(file_of(s)) & pos.pieces(Us, KING);
+            if (ka)
+                ebonus += rr;
 
             // If blockSq is not the queening square then consider also a second push
             if (relative_rank(Us, blockSq) != RANK_8)
