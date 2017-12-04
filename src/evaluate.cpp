@@ -666,6 +666,13 @@ namespace {
             ebonus +=  distance(pos.square<KING>(Them), blockSq) * 5 * rr
                      - distance(pos.square<KING>(  Us), blockSq) * 2 * rr;
 
+            // King support
+            if (distance(pos.square<KING>(  Us), blockSq) < 2) {
+                Bitboard ka= forward_ranks_bb(Us, s) & adjacent_files_bb(file_of(s)) & pos.pieces(Us, KING);
+                if (ka)
+                    ebonus += rr;
+            }
+
             // If blockSq is not the queening square then consider also a second push
             if (relative_rank(Us, blockSq) != RANK_8)
                 ebonus -= distance(pos.square<KING>(Us), blockSq + Up) * rr;
@@ -697,11 +704,6 @@ namespace {
 
                 else if (defendedSquares & blockSq)
                     k += 4;
-
-                // King support
-                Bitboard ka= forward_ranks_bb(Us, s) & adjacent_files_bb(file_of(s)) & pos.pieces(Us, KING);
-                if (ka)
-                    ebonus += 2 * rr;
 
                 mbonus += k * rr, ebonus += k * rr;
             }
