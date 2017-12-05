@@ -663,15 +663,13 @@ namespace {
             Square blockSq = s + Up;
 
             // King support
-            int dist;
-            if ((dist= distance(pos.square<KING>(Us), blockSq)) < 3) {
-                if (forward_ranks_bb(Us, s - Up) & adjacent_files_bb(file_of(s)) & pos.pieces(Us, KING))
+            if (    distance(pos.square<KING>(Us), blockSq) < 3
+                && (forward_ranks_bb(Us, s - Up) & adjacent_files_bb(file_of(s)) & pos.pieces(Us, KING))
 		    ebonus += rr; 
-            }
 
             // Adjust bonus based on the king's proximity
             ebonus +=  distance(pos.square<KING>(Them), blockSq) * 5 * rr
-                     - (2 * distance(pos.square<KING>(Us), blockSq) + 1) * rr;
+                     - distance(pos.square<KING>(  Us), blockSq) * 2 * rr;
 
             // If blockSq is not the queening square then consider also a second push
             if (relative_rank(Us, blockSq) != RANK_8)
