@@ -664,7 +664,7 @@ namespace {
 
             // King support
             if (    distance(pos.square<KING>(Us), blockSq) < 3
-                && (forward_ranks_bb(Us, s - Up) & adjacent_files_bb(file_of(s)) & pos.pieces(Us, KING))
+                && (forward_ranks_bb(Us, s - Up) & adjacent_files_bb(file_of(s)) & pos.pieces(Us, KING)))
 		    ebonus += rr; 
 
             // Adjust bonus based on the king's proximity
