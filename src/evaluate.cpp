@@ -663,7 +663,7 @@ namespace {
             Square blockSq = s + Up;
 
             // King support
-            if (    distance(pos.square<KING>(Us), blockSq) < 3
+            if (    distance(pos.square<KING>(Us), blockSq) < 2
                 && (forward_ranks_bb(Us, s - Up) & adjacent_files_bb(file_of(s)) & pos.pieces(Us, KING)))
 		    ebonus += rr; 
 
