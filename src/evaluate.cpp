@@ -428,6 +428,9 @@ namespace {
     const Square ksq = pos.square<KING>(Us);
     Bitboard weak, b, b1, b2, safe, unsafeChecks;
 
+    if (!pos.non_pawn_material(Them))
+	return make_score(0, 0);
+
     // King shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos, ksq);
 
