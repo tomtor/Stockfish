@@ -436,7 +436,7 @@ namespace {
         if (pos.side_to_move() == Them && distance(ksq, pos.square<KING>(Them)) == 2) {
             Bitboard bp= (Them == WHITE ? shift<NORTH> : shift<SOUTH>)(pos.pieces(Them, PAWN));
             if ((bp & pos.pieces()) == bp) // Zugzwang
-                score+= make_score(0, 16);
+                score+= make_score(0, 24);
 	}
     }
 
