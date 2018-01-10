@@ -431,13 +431,11 @@ namespace {
     // King shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos, ksq);
 
-    // King opposition
-    if (!pos.non_pawn_material(Them)) {
-        if (pos.side_to_move() == Them && distance(ksq, pos.square<KING>(Them)) == 2) {
-            Bitboard bp= (Them == WHITE ? shift<NORTH> : shift<SOUTH>)(pos.pieces(Them, PAWN));
-            if ((bp & pos.pieces()) == bp) // Zugzwang
-                score+= make_score(0, 12);
-	}
+    // King zugzwang
+    if (!pos.non_pawn_material(Them) && pos.side_to_move() == Them) {
+        Bitboard bp= (Them == WHITE ? shift<NORTH> : shift<SOUTH>)(pos.pieces(Them, PAWN));
+        if ((bp & pos.pieces()) == bp)
+            score+= make_score(0, 16);
     }
 
     // Main king safety evaluation
