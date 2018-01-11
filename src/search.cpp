@@ -653,7 +653,7 @@ namespace {
 
     // Step 6. Razoring (skipped when in check)
     if (   !PvNode
-        &&  depth < (4 - (ttMove != MOVE_NONE)) * ONE_PLY
+        &&  depth < (4 - (ttMove == MOVE_NONE)) * ONE_PLY
         &&  eval + razor_margin[depth / ONE_PLY] <= alpha)
     {
         if (depth <= ONE_PLY)
