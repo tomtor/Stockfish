@@ -70,6 +70,7 @@ namespace {
   int razor_base = 400;
   int razor_step = 100;
   int razor_tt = 200;
+  TUNE(razor_base, razor_step, razor_tt);
   Value futility_margin(Depth d) { return Value(150 * d / ONE_PLY); }
 
   // Futility and reductions lookup tables, initialized at startup
