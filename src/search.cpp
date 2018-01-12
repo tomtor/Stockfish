@@ -653,8 +653,8 @@ namespace {
 
     // Step 6. Razoring (skipped when in check)
     if (   !PvNode
-        &&  depth < 3 * ONE_PLY
-        &&  eval + razor_margin[depth / ONE_PLY] <= alpha)
+        &&  depth < 4
+        &&  eval + (3 + (ttMove == MOVE_NONE)) * razor_margin[depth / ONE_PLY] / 3 <= alpha)
     {
         if (depth <= ONE_PLY)
             return qsearch<NonPV, false>(pos, ss, alpha, alpha+1);
