@@ -67,7 +67,7 @@ namespace {
   const int skipPhase[] = { 0, 1, 0, 1, 2, 3, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 6, 7 };
 
   // Razoring margin based on depth and TT-move
-  Value razor_margin(Depth d, bool noTT) { return Value(397 + d / ONE_PLY * 101 + noTT * 200); }
+  Value razor_margin(Depth d, bool noTT) { return Value(650 + d / ONE_PLY * 44 + noTT * 122); }
   // Futility margin based on depth
   Value futility_margin(Depth d) { return Value(150 * d / ONE_PLY); }
 
@@ -653,7 +653,7 @@ namespace {
 
     // Step 6. Razoring (skipped when in check)
     if (   !PvNode
-        &&  depth < 4 * ONE_PLY
+        &&  depth < 5 * ONE_PLY
         &&  eval + razor_margin(depth, ttMove == MOVE_NONE) <= alpha)
     {
         if (depth <= ONE_PLY)
