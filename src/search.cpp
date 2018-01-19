@@ -67,7 +67,7 @@ namespace {
   const int skipPhase[] = { 0, 1, 0, 1, 2, 3, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 6, 7 };
 
   // Razoring and futility margin based on depth
-  Value razor_margin(Depth d) { return Value(550 + 40 * d / ONE_PLY); }
+  Value razor_margin(Depth d) { return Value(570 + 24 * d / ONE_PLY); }
   Value futility_margin(Depth d) { return Value(150 * d / ONE_PLY); }
 
   // Futility and reductions lookup tables, initialized at startup
