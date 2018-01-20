@@ -67,7 +67,7 @@ namespace {
   const int skipPhase[] = { 0, 1, 0, 1, 2, 3, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 6, 7 };
 
   // Razoring and futility margin based on depth
-  int RMBase= 570;
+  int RMBase= 545;
   int RMDelta= 32;
   TUNE(RMBase, RMDelta);
   Value razor_margin(Depth d) { return Value(RMBase + RMDelta * d / ONE_PLY); }
