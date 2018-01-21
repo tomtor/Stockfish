@@ -431,6 +431,10 @@ namespace {
     // King shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos, ksq);
 
+    // Bonus for nearby pawns
+    int nnp= popcount(pos.pieces(Us, PAWN) & MaxDistanceBB[2][ksq]);
+    score+= make_score(nnp * 4, nnp * 8);
+
     // Main king safety evaluation
     if (kingAttackersCount[Them] > (1 - pos.count<QUEEN>(Them)))
     {
