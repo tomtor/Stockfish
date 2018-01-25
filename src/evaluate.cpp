@@ -594,7 +594,7 @@ namespace {
     if (pos.pieces(Us, ROOK, QUEEN)) {
         score += WeakUnopposedPawn * pe->weak_unopposed(Them);
         if (pe->weak_unopposed(Them) > 1)
-            score += make_score(2, 10);
+            score -= make_score(2, 10);
     }
 
     // Find squares where our pawns can push on the next move
