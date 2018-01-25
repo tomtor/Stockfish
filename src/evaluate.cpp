@@ -223,8 +223,7 @@ namespace {
   const Score ThreatBySafePawn      = S(192,175);
   const Score ThreatByRank          = S( 16,  3);
   const Score Hanging               = S( 48, 27);
-  const Score WeakUnopposedPawn     = S(  5, 25);
-  const Score WeakUnopposedPawns    = S(  4, 18);
+  const Score WeakUnopposedPawn     = S(  4, 20);
   const Score ThreatByPawnPush      = S( 38, 22);
   const Score ThreatByAttackOnQueen = S( 38, 22);
   const Score HinderPassedPawn      = S(  7,  0);
@@ -593,7 +592,7 @@ namespace {
 
     // Bonus for opponent unopposed weak pawns
     if (pos.pieces(Us, ROOK, QUEEN))
-        score += (pe->weak_unopposed(Them) > 1 ? WeakUnopposedPawns : WeakUnopposedPawn) * pe->weak_unopposed(Them);
+        score += WeakUnopposedPawn * pe->weak_unopposed(Them);
 
     // Find squares where our pawns can push on the next move
     b  = shift<Up>(pos.pieces(Us, PAWN)) & ~pos.pieces();
