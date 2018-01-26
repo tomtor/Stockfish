@@ -216,6 +216,8 @@ namespace {
   const Score BishopPawns           = S(  8, 12);
   const Score LongRangedBishop      = S( 22,  0);
   const Score RookOnPawn            = S(  8, 24);
+  const Score MinorOnBackward       = S( 10, 10);
+  const Score MajorOnBackward       = S( 10, 10);
   const Score TrappedRook           = S( 92,  0);
   const Score WeakQueen             = S( 50, 10);
   const Score CloseEnemies          = S(  7,  0);
@@ -573,7 +575,7 @@ namespace {
             if (type_of(pos.piece_on(s)) != PAWN)
                 score += ThreatByRank * (int)relative_rank(Them, s);
             else if (pe->backward_pawns(Them) & s)
-                score += make_score(10, 10);
+                score += MinorOnBackward;
         }
 
         b = (pos.pieces(Them, QUEEN) | weak) & attackedBy[Us][ROOK];
@@ -584,7 +586,7 @@ namespace {
             if (type_of(pos.piece_on(s)) != PAWN)
                 score += ThreatByRank * (int)relative_rank(Them, s);
             else if (pe->backward_pawns(Them) & s)
-                score += make_score(10, 10);
+                score += MajorOnBackward;
         }
 
         score += Hanging * popcount(weak & ~attackedBy[Them][ALL_PIECES]);
