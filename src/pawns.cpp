@@ -32,16 +32,16 @@ namespace {
   #define S(mg, eg) make_score(mg, eg)
 
   // Isolated pawn penalty
-  const Score Isolated = S(13, 18);
+  const Score Isolated = S(18, 20);
 
   // Backward pawn penalty
-  const Score Backward = S(24, 12);
+  const Score Backward = S(27, 19);
 
   // Connected pawn bonus by opposed, phalanx, #support and rank
   Score Connected[2][2][3][RANK_NB];
 
   // Doubled pawn penalty
-  const Score Doubled = S(18, 38);
+  const Score Doubled = S(20, 39);
 
   // Weakness of our pawn shelter in front of the king by [isKingFile][distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawns or our pawn is behind our king.
@@ -103,7 +103,7 @@ namespace {
     Bitboard ourPawns   = pos.pieces(  Us, PAWN);
     Bitboard theirPawns = pos.pieces(Them, PAWN);
 
-    e->passedPawns[Us] = e->pawnAttacksSpan[Us] = e->weakUnopposed[Us] = 0;
+    e->weakPawns[Us] = e->passedPawns[Us] = e->pawnAttacksSpan[Us] = e->weakUnopposed[Us] = 0;
     e->semiopenFiles[Us] = 0xFF;
     e->kingSquares[Us]   = SQ_NONE;
     e->pawnAttacks[Us]   = shift<Right>(ourPawns) | shift<Left>(ourPawns);
@@ -171,13 +171,13 @@ namespace {
             score += Connected[opposed][bool(phalanx)][popcount(supported)][relative_rank(Us, s)];
 
         else if (!neighbours)
-            score -= Isolated, e->weakUnopposed[Us] += !opposed;
+            score -= Isolated, e->weakUnopposed[Us] += !opposed, e->weakPawns[Us] |= s;
 
         else if (backward)
-            score -= Backward, e->weakUnopposed[Us] += !opposed;
+            score -= Backward, e->weakUnopposed[Us] += !opposed, e->weakPawns[Us] |= s;
 
         if (doubled && !supported)
-            score -= Doubled;
+            score -= Doubled, e->weakPawns[Us] |= s, e->weakPawns[Us] |= s;
     }
 
     return score;
