@@ -103,7 +103,7 @@ namespace {
     Bitboard ourPawns   = pos.pieces(  Us, PAWN);
     Bitboard theirPawns = pos.pieces(Them, PAWN);
 
-    e->passedPawns[Us] = e->pawnAttacksSpan[Us] = e->weakUnopposed[Us] = 0;
+    e->weakPawns[Us] = e->passedPawns[Us] = e->pawnAttacksSpan[Us] = e->weakUnopposed[Us] = 0;
     e->semiopenFiles[Us] = 0xFF;
     e->kingSquares[Us]   = SQ_NONE;
     e->pawnAttacks[Us]   = shift<Right>(ourPawns) | shift<Left>(ourPawns);
@@ -171,13 +171,13 @@ namespace {
             score += Connected[opposed][bool(phalanx)][popcount(supported)][relative_rank(Us, s)];
 
         else if (!neighbours)
-            score -= Isolated, e->weakUnopposed[Us] += !opposed;
+            score -= Isolated, e->weakUnopposed[Us] += !opposed, e->weakPawns[Us] |= s;
 
         else if (backward)
-            score -= Backward, e->weakUnopposed[Us] += !opposed;
+            score -= Backward, e->weakUnopposed[Us] += !opposed, e->weakPawns[Us] |= s;
 
         if (doubled && !supported)
-            score -= Doubled;
+            score -= Doubled, e->weakPawns[Us] |= s;
     }
 
     return score;
