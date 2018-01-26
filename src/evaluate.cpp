@@ -228,6 +228,7 @@ namespace {
   const Score ThreatByRank          = S( 16,  3);
   const Score Hanging               = S( 48, 27);
   const Score WeakUnopposedPawn     = S(  5, 25);
+  const Score HinderWeakPawn        = S( 10, 10);
   const Score ThreatByPawnPush      = S( 38, 22);
   const Score ThreatByAttackOnQueen = S( 38, 22);
   const Score HinderPassedPawn      = S(  7,  0);
@@ -532,6 +533,7 @@ namespace {
 
     const Color     Them     = (Us == WHITE ? BLACK      : WHITE);
     const Direction Up       = (Us == WHITE ? NORTH      : SOUTH);
+    const Direction Down     = (Us == WHITE ? SOUTH      : NORTH);
     const Direction Left     = (Us == WHITE ? NORTH_WEST : SOUTH_EAST);
     const Direction Right    = (Us == WHITE ? NORTH_EAST : SOUTH_WEST);
     const Bitboard  TRank3BB = (Us == WHITE ? Rank3BB    : Rank6BB);
@@ -593,6 +595,10 @@ namespace {
         if (b)
             score += ThreatByKing[more_than_one(b)];
     }
+
+    // Bonus for attacks on the square in front of weak pawns
+    int aowp= popcount(shift<Down>(pe->weak_pawns(Them)) & (attackedBy[Us][ALL_PIECES]));
+    score += HinderWeakPawn * aowp;
 
     // Bonus for opponent unopposed weak pawns
     if (pos.pieces(Us, ROOK, QUEEN))
