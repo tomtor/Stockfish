@@ -576,6 +576,8 @@ namespace {
             score += ThreatByMinor[type_of(pos.piece_on(s))];
             if (type_of(pos.piece_on(s)) != PAWN)
                 score += ThreatByRank * (int)relative_rank(Them, s);
+            else if (pe->backward_pawns(Them) & s)
+                score += make_score(10, 10);
         }
 
         b = (pos.pieces(Them, QUEEN) | weak) & attackedBy[Us][ROOK];
@@ -585,6 +587,8 @@ namespace {
             score += ThreatByRook[type_of(pos.piece_on(s))];
             if (type_of(pos.piece_on(s)) != PAWN)
                 score += ThreatByRank * (int)relative_rank(Them, s);
+            else if (pe->backward_pawns(Them) & s)
+                score += make_score(10, 10);
         }
 
         score += Hanging * popcount(weak & ~attackedBy[Them][ALL_PIECES]);
