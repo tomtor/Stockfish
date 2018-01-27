@@ -216,8 +216,8 @@ namespace {
   const Score BishopPawns           = S(  8, 12);
   const Score LongRangedBishop      = S( 22,  0);
   Score RookOnPawn            = S(  8, 24);
-  Score MinorOnBackward       = S( 10, 10);
-  Score MajorOnBackward       = S( 10, 10);
+  Score MinorOnWeak       = S( 10, 10);
+  Score MajorOnWeak       = S( 10, 10);
   const Score TrappedRook           = S( 92,  0);
   const Score WeakQueen             = S( 50, 10);
   const Score CloseEnemies          = S(  7,  0);
@@ -231,7 +231,7 @@ namespace {
   const Score HinderPassedPawn      = S(  7,  0);
   const Score TrappedBishopA1H1     = S( 50, 50);
 
-  TUNE(SetRange(0,50), MinorOnBackward, MajorOnBackward);
+  TUNE(SetRange(0,50), MinorOnWeak, MajorOnWeak);
   TUNE(SetRange(0,50), WeakUnopposedPawn);
   TUNE(SetRange(0,50), RookOnPawn);
 
@@ -578,8 +578,8 @@ namespace {
             score += ThreatByMinor[type_of(pos.piece_on(s))];
             if (type_of(pos.piece_on(s)) != PAWN)
                 score += ThreatByRank * (int)relative_rank(Them, s);
-            else if (pe->backward_pawns(Them) & s)
-                score += MinorOnBackward;
+            else if (pe->weak_pawns(Them) & s)
+                score += MinorOnWeak;
         }
 
         b = (pos.pieces(Them, QUEEN) | weak) & attackedBy[Us][ROOK];
@@ -589,8 +589,8 @@ namespace {
             score += ThreatByRook[type_of(pos.piece_on(s))];
             if (type_of(pos.piece_on(s)) != PAWN)
                 score += ThreatByRank * (int)relative_rank(Them, s);
-            else if (pe->backward_pawns(Them) & s)
-                score += MajorOnBackward;
+            else if (pe->weak_pawns(Them) & s)
+                score += MajorOnWeak;
         }
 
         score += Hanging * popcount(weak & ~attackedBy[Them][ALL_PIECES]);
