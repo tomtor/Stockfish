@@ -32,10 +32,10 @@ namespace {
   #define S(mg, eg) make_score(mg, eg)
 
   // Isolated pawn penalty
-  const Score Isolated = S(13, 18);
+  const Score Isolated = S(13, 17);
 
   // Backward pawn penalty
-  const Score Backward = S(24, 12);
+  const Score Backward = S(23, 12);
 
   // Connected pawn bonus by opposed, phalanx, #support and rank
   Score Connected[2][2][3][RANK_NB];
@@ -192,7 +192,6 @@ namespace {
     return score;
   }
 
-  TUNE(SetRange(0,50), Isolated, Backward, Doubled);
 } // namespace
 
 namespace Pawns {
