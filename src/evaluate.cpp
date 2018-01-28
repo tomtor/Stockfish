@@ -220,8 +220,6 @@ namespace {
   const Score BishopPawns           = S(  8, 12);
   const Score LongRangedBishop      = S( 22,  0);
   const Score RookOnPawn            = S(  8, 24);
-  const Score MinorOnWeak           = S( 10, 10);
-  const Score MajorOnWeak           = S( 10,  9);
   const Score TrappedRook           = S( 92,  0);
   const Score WeakQueen             = S( 50, 10);
   const Score CloseEnemies          = S(  7,  0);
@@ -230,6 +228,7 @@ namespace {
   const Score ThreatByRank          = S( 16,  3);
   const Score Hanging               = S( 48, 27);
   const Score WeakUnopposedPawn     = S(  5, 25);
+  const Score MinorOnWeakPawn       = S( 10, 10);
   const Score ThreatByPawnPush      = S( 38, 22);
   const Score ThreatByAttackOnQueen = S( 38, 22);
   const Score HinderPassedPawn      = S(  7,  0);
@@ -578,8 +577,6 @@ namespace {
             score += ThreatByMinor[type_of(pos.piece_on(s))];
             if (type_of(pos.piece_on(s)) != PAWN)
                 score += ThreatByRank * (int)relative_rank(Them, s);
-            else if (pe->weak_pawns(Them) & s)
-                score += MinorOnWeak;
         }
 
         b = (pos.pieces(Them, QUEEN) | weak) & attackedBy[Us][ROOK];
@@ -589,8 +586,6 @@ namespace {
             score += ThreatByRook[type_of(pos.piece_on(s))];
             if (type_of(pos.piece_on(s)) != PAWN)
                 score += ThreatByRank * (int)relative_rank(Them, s);
-            else if (pe->weak_pawns(Them) & s)
-                score += MajorOnWeak;
         }
 
         score += Hanging * popcount(weak & ~attackedBy[Them][ALL_PIECES]);
@@ -599,6 +594,10 @@ namespace {
         if (b)
             score += ThreatByKing[more_than_one(b)];
     }
+
+    // Bonus for minor attacks on weak pawns
+    int maowp= popcount(pe->weak_pawns(Them) & (attackedBy[Us][KNIGHT] | attackedBy[Us][BISHOP]));
+    score += MinorOnWeakPawn * maowp;
 
     // Bonus for opponent unopposed weak pawns
     if (pos.pieces(Us, ROOK, QUEEN))
