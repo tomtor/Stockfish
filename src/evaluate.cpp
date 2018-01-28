@@ -228,11 +228,13 @@ namespace {
   const Score ThreatByRank          = S( 16,  3);
   const Score Hanging               = S( 48, 27);
   const Score WeakUnopposedPawn     = S(  5, 25);
-  const Score MinorOnWeakPawn       = S( 15, 15);
+  Score MinorOnWeakPawn       = S( 10, 10);
   const Score ThreatByPawnPush      = S( 38, 22);
   const Score ThreatByAttackOnQueen = S( 38, 22);
   const Score HinderPassedPawn      = S(  7,  0);
   const Score TrappedBishopA1H1     = S( 50, 50);
+
+  TUNE(MinorOnWeakPawn);
 
   #undef S
   #undef V
