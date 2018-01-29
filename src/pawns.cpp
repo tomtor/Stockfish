@@ -180,7 +180,7 @@ namespace {
             score -= Doubled;
 
         if (lever)
-            score += make_score((relative_rank(Us, s) - 3) * 16, (relative_rank(Us, s) - 3) * 16);
+            score += make_score((relative_rank(Us, s) - 3) * 8, (relative_rank(Us, s) - 3) * 8);
     }
 
     return score;
