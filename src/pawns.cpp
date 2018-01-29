@@ -179,8 +179,7 @@ namespace {
         if (doubled && !supported)
             score -= Doubled;
 
-        if (lever)
-            score += make_score((relative_rank(Us, s) - 3) * 8, (relative_rank(Us, s) - 3) * 8);
+        e->leverBonus= make_score(lever * (relative_rank(Us, s) - 3), lever * (relative_rank(Us, s) - 3));
     }
 
     return score;

@@ -40,6 +40,7 @@ struct Entry {
   int weak_unopposed(Color c) const { return weakUnopposed[c]; }
   int pawn_asymmetry() const { return asymmetry; }
   int open_files() const { return openFiles; }
+  int lever_bonus() const { return leverBonus; }
 
   int semiopen_file(Color c, File f) const {
     return semiopenFiles[c] & (1 << f);
@@ -78,6 +79,7 @@ struct Entry {
   int pawnsOnSquares[COLOR_NB][COLOR_NB]; // [color][light/dark squares]
   int asymmetry;
   int openFiles;
+  int leverBonus;
 };
 
 typedef HashTable<Entry, 16384> Table;
