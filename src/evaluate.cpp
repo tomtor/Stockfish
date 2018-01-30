@@ -635,6 +635,12 @@ namespace {
   // evaluate_passed_pawns() evaluates the passed pawns and candidate passed
   // pawns of the given color.
 
+  int c1m= 40, c1e= 40;
+  int c2m= 26, c2e= 26;
+
+  TUNE(c1m, c1e, c2m, c2e);
+
+
   template<Tracing T>  template<Color Us>
   Score Evaluation<T>::evaluate_passed_pawns() {
 
@@ -708,9 +714,9 @@ namespace {
         // Scale down bonus for candidate passers which need more than one
         // pawn push to become passed or have a pawn in front of them.
         if (!pos.pawn_passed(Us, s + Up))
-            mbonus = 10 * mbonus / 16, ebonus = 10 * ebonus / 16;
+            mbonus = c1m * mbonus / 64, ebonus = c1e * ebonus / 64;
         else if (pos.pieces(PAWN) & forward_file_bb(Us, s))
-            mbonus = 13 * mbonus / 32, ebonus = 13 * ebonus / 32;
+            mbonus = c2m * mbonus / 64, ebonus = c2e * ebonus / 64;
 
         score += make_score(mbonus, ebonus) + PassedFile[file_of(s)];
     }
