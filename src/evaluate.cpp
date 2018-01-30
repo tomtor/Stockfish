@@ -710,7 +710,7 @@ namespace {
         if (!pos.pawn_passed(Us, s + Up))
             mbonus = 10 * mbonus / 16, ebonus = 10 * ebonus / 16;
         else if (pos.pieces(PAWN) & forward_file_bb(Us, s))
-            mbonus /= 2, ebonus /= 2;
+            mbonus = 13 * mbonus / 32, ebonus = 13 * ebonus / 32;
 
         score += make_score(mbonus, ebonus) + PassedFile[file_of(s)];
     }
