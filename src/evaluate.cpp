@@ -660,6 +660,11 @@ namespace {
 
         Value mbonus = Passed[MG][r], ebonus = Passed[EG][r];
 
+        // Scale down bonus for candidate passers which need more than one
+        // pawn push to become passed or have a pawn in front of them.
+        if (!pos.pawn_passed(Us, s + Up) || (pos.pieces(PAWN) & forward_file_bb(Us, s)))
+            mbonus /= 2, ebonus /= 2;
+
         if (rr)
         {
             Square blockSq = s + Up;
@@ -704,11 +709,6 @@ namespace {
             else if (pos.pieces(Us) & blockSq)
                 mbonus += rr + r * 2, ebonus += rr + r * 2;
         } // rr != 0
-
-        // Scale down bonus for candidate passers which need more than one
-        // pawn push to become passed or have a pawn in front of them.
-        if (!pos.pawn_passed(Us, s + Up) || (pos.pieces(PAWN) & forward_file_bb(Us, s)))
-            mbonus /= 2, ebonus /= 2;
 
         score += make_score(mbonus, ebonus) + PassedFile[file_of(s)];
     }
