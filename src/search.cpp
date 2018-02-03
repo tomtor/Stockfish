@@ -760,11 +760,11 @@ namespace {
     }
 
     // Step 10. Internal iterative deepening (skipped when in check)
-    if (    depth >= 6 * ONE_PLY
+    if (    depth >= (6 - PvNode) * ONE_PLY
         && !ttMove
         && (PvNode || ss->staticEval + 256 >= beta))
     {
-        Depth d = (3 * depth / (4 * ONE_PLY) - 2) * ONE_PLY;
+        Depth d = std::min(3 * depth / (4 * ONE_PLY) - 2, 2) * ONE_PLY;
         search<NT>(pos, ss, alpha, beta, d, cutNode, true);
 
         tte = TT.probe(posKey, ttHit);
