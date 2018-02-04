@@ -764,7 +764,7 @@ namespace {
         && !ttMove
         && (PvNode || ss->staticEval + 256 >= beta))
     {
-        Depth d = (3 * depth / ((4 + !PvNode) * ONE_PLY) - 1) * ONE_PLY;
+        Depth d = (3 * depth / ((4 + !PvNode) * ONE_PLY) - 2) * ONE_PLY;
         search<NT>(pos, ss, alpha, beta, d, cutNode, true);
 
         tte = TT.probe(posKey, ttHit);
