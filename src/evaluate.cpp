@@ -596,8 +596,8 @@ namespace {
             score += ThreatByKing[more_than_one(b)];
     }
 
-    // Bonus for attacks on the square in front of weak pawns
-    int aowp= popcount(shift<Down>(pe->weak_pawns(Them)) & (attackedBy[Us][ALL_PIECES]));
+    // Bonus for attacks on the squares in front of weak enemy pawns when not occupied by our pieces
+    int aowp= popcount(shift<Down>(pe->weak_pawns(Them)) & ~pos.pieces(Us) & attackedBy[Us][ALL_PIECES]);
     score += HinderWeakPawn * aowp;
 
     // Bonus for opponent unopposed weak pawns
