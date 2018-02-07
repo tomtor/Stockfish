@@ -596,7 +596,7 @@ namespace {
     }
 
     // Bonus for opponent undefended weak pawns
-    int nuwp= popcount(pe->weak_pawns(Them)) - popcount(pe->weak_pawns(Them) & attackedBy[Them][ALL_PIECES]);
+    int nuwp= popcount(pe->weak_pawns(Them) & ~attackedBy[Them][ALL_PIECES]);
     score += WeakUndefendedPawn * nuwp;
 
     // Bonus for opponent unopposed weak pawns
