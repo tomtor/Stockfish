@@ -665,6 +665,10 @@ namespace {
         {
             Square blockSq = s + Up;
 
+            // Reduce rr if no support
+            if (pos.side_to_move() == Them && !(attackedBy[Us][ALL_PIECES] & s))
+                rr = std::max(0, rr - popcount(pe->passed_pawns(Us)));
+
             // Adjust bonus based on the king's proximity
             ebonus += (king_distance(Them, blockSq) * 5 - king_distance(Us, blockSq) * 2) * rr;
 
