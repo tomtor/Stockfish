@@ -228,7 +228,7 @@ namespace {
   const Score ThreatByRank          = S( 16,  3);
   const Score Hanging               = S( 48, 27);
   const Score WeakUnopposedPawn     = S(  5, 25);
-  const Score WeakUndefendedPawn    = S(  5, 10);
+  const Score WeakUndefendedPawn    = S(  3, 12);
   const Score ThreatByPawnPush      = S( 38, 22);
   const Score ThreatByAttackOnQueen = S( 38, 22);
   const Score HinderPassedPawn      = S(  7,  0);
@@ -596,8 +596,7 @@ namespace {
     }
 
     // Bonus for opponent undefended weak pawns
-    int nuwp= popcount(pe->weak_pawns(Them) & ~attackedBy[Them][ALL_PIECES]);
-    score += WeakUndefendedPawn * nuwp;
+    score += WeakUndefendedPawn * popcount(pe->weak_pawns(Them) & ~attackedBy[Them][ALL_PIECES]);
 
     // Bonus for opponent unopposed weak pawns
     if (pos.pieces(Us, ROOK, QUEEN))
