@@ -644,6 +644,7 @@ namespace {
 
     Bitboard b, bb, squaresToQueen, defendedSquares, unsafeSquares;
     Score score = SCORE_ZERO;
+    const int nrPassed = popcount(pe->passed_pawns(Us));
 
     b = pe->passed_pawns(Us);
 
@@ -656,7 +657,7 @@ namespace {
         bb = forward_file_bb(Us, s) & (attackedBy[Them][ALL_PIECES] | pos.pieces(Them));
         score -= HinderPassedPawn * popcount(bb);
 
-        int r = relative_rank(Us, s);
+        int r = std::max(RANK_2, Rank(relative_rank(Us, s) - (nrPassed - 1)));
         int rr = RankFactor[r];
 
         Value mbonus = Passed[MG][r], ebonus = Passed[EG][r];
