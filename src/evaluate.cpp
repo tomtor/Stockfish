@@ -209,8 +209,8 @@ namespace {
     S(-20,-12), S( 1, -8), S( 2, 10), S(  9, 10)
   };
 
-  // Rank factor applied on some bonus for passed pawn on rank 4 or beyond
-  const int RankFactor[RANK_NB] = {0, 0, 0, 2, 7, 12, 19};
+  // Rank factor applied on some bonus for passed pawn on rank 3 or beyond
+  const int RankFactor[RANK_NB] = {0, 0, 1, 3, 8, 13, 20};
 
   // KingProtector[PieceType-2] contains a bonus according to distance from king
   const Score KingProtector[] = { S(-3, -5), S(-4, -3), S(-3, 0), S(-1, 1) };
