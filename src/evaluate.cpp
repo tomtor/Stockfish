@@ -663,8 +663,8 @@ namespace {
 
         // Reduce bonus if no support
         if (pos.side_to_move() == Them && !(attackedBy[Us][ALL_PIECES] & s))
-            mbonus = (7 - popcount(pe->passed_pawns(Us))) * mbonus / 7,
-            ebonus = (7 - popcount(pe->passed_pawns(Us))) * ebonus / 7;
+            mbonus = 6 * mbonus / 7,
+            ebonus = 6 * ebonus / 7;
 
         if (rr)
         {
