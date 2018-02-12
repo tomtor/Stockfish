@@ -663,8 +663,8 @@ namespace {
 
         // Reduce bonus if no support
         if (pos.side_to_move() == Them && !(attackedBy[Us][ALL_PIECES] & s))
-            mbonus = 6 * mbonus / 7,
-            ebonus = 6 * ebonus / 7;
+            mbonus = 14 * mbonus / 16,
+            ebonus = 14 * ebonus / 16;
 
         if (rr)
         {
