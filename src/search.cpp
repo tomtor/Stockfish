@@ -66,8 +66,10 @@ namespace {
   const int SkipSize[]  = { 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4 };
   const int SkipPhase[] = { 0, 1, 0, 1, 2, 3, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 6, 7 };
 
-  // Razoring and futility margins
-  const int RazorMargin = 585;
+  // Razoring margins [Midgame / Endgame]
+  const int RazorMargin[] = { 560, 600 };
+
+  // Futility margin
   Value futility_margin(Depth d) { return Value(150 * d / ONE_PLY); }
 
   // Futility and reductions lookup tables, initialized at startup
@@ -666,14 +668,15 @@ namespace {
         goto moves_loop;
 
     // Step 7. Razoring (skipped when in check)
+    int razorMargin;
     if (   !PvNode
         &&  depth < 3 * ONE_PLY
-        &&  eval + RazorMargin <= alpha)
+        &&  eval + (razorMargin = RazorMargin[pos.non_pawn_material(WHITE) + pos.non_pawn_material(BLACK) < 2 * RookValueMg]) <= alpha)
     {
         if (depth <= ONE_PLY)
             return qsearch<NonPV, false>(pos, ss, alpha, alpha+1);
 
-        Value ralpha = alpha - RazorMargin;
+        Value ralpha = alpha - razorMargin;
         Value v = qsearch<NonPV, false>(pos, ss, ralpha, ralpha+1);
         if (v <= ralpha)
             return v;
