@@ -670,7 +670,7 @@ namespace {
     // Step 7. Razoring (skipped when in check)
     int razorMargin;
     if (   !PvNode
-        &&  depth < 3 * ONE_PLY
+        &&  depth < 4 * ONE_PLY
         &&  eval + (razorMargin = RazorMargin[pos.non_pawn_material(WHITE) + pos.non_pawn_material(BLACK) < 2 * RookValueMg]) <= alpha)
     {
         if (depth <= ONE_PLY)
