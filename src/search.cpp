@@ -67,7 +67,7 @@ namespace {
   const int SkipPhase[] = { 0, 1, 0, 1, 2, 3, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 6, 7 };
 
   // Razoring margins [Midgame / Endgame]
-  const int RazorMargin[] = { 560, 600 };
+  const int RazorMargin[] = { 580, 620 };
 
   // Futility margin
   Value futility_margin(Depth d) { return Value(150 * d / ONE_PLY); }
@@ -670,7 +670,7 @@ namespace {
     // Step 7. Razoring (skipped when in check)
     int razorMargin;
     if (   !PvNode
-        &&  depth < 4 * ONE_PLY
+        &&  depth < 3 * ONE_PLY
         &&  eval + (razorMargin = RazorMargin[pos.non_pawn_material(WHITE) + pos.non_pawn_material(BLACK) < 2 * RookValueMg]) <= alpha)
     {
         if (depth <= ONE_PLY)
