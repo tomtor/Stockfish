@@ -669,15 +669,7 @@ namespace {
     if (   !PvNode
         &&  depth < 3 * ONE_PLY
         &&  eval + RazorMargin <= alpha)
-    {
-        if (depth <= ONE_PLY)
             return qsearch<NonPV, false>(pos, ss, alpha, alpha+1);
-
-        Value ralpha = alpha - RazorMargin;
-        Value v = qsearch<NonPV, false>(pos, ss, ralpha, ralpha+1);
-        if (v <= ralpha)
-            return v;
-    }
 
     // Step 8. Futility pruning: child node (skipped when in check)
     if (   !rootNode
