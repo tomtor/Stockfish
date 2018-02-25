@@ -473,6 +473,9 @@ void Thread::search() {
                 skill.best ? skill.best : skill.pick_best(multiPV)));
 }
 
+int M1= 400, M2= 600, M2r= 580;
+
+TUNE(M1, M2, M2r);
 
 namespace {
 
@@ -667,14 +670,14 @@ namespace {
     // Step 7. Razoring (skipped when in check)
     if (   !PvNode
         &&  depth <= ONE_PLY
-        &&  eval + 400 <= alpha)
+        &&  eval + M1 <= alpha)
             return qsearch<NonPV, false>(pos, ss, alpha, alpha+1);
     else if (   !PvNode
              &&  depth <= 2 * ONE_PLY
-             &&  eval + 600 <= alpha)
+             &&  eval + M2 <= alpha)
     {
 
-        Value ralpha = alpha - 580;
+        Value ralpha = alpha - M2r;
         Value v = qsearch<NonPV, false>(pos, ss, ralpha, ralpha+1);
         if (v <= ralpha)
             return v;
