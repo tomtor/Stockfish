@@ -66,8 +66,7 @@ namespace {
   const int SkipSize[]  = { 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4 };
   const int SkipPhase[] = { 0, 1, 0, 1, 2, 3, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 6, 7 };
 
-  // Razoring and futility margins
-  const int RazorMargin = 590;
+  // Futility margin
   Value futility_margin(Depth d) { return Value(150 * d / ONE_PLY); }
 
   // Futility and reductions lookup tables, initialized at startup
@@ -667,13 +666,15 @@ namespace {
 
     // Step 7. Razoring (skipped when in check)
     if (   !PvNode
-        &&  depth < 3
-        &&  eval + RazorMargin <= alpha)
-    {
-        if (depth <= ONE_PLY)
+        &&  depth <= ONE_PLY
+        &&  eval + 400 <= alpha)
             return qsearch<NonPV, false>(pos, ss, alpha, alpha+1);
+    else if (   !PvNode
+             &&  depth <= 2 * ONE_PLY
+             &&  eval + 600 <= alpha)
+    {
 
-        Value ralpha = alpha - RazorMargin + 40;
+        Value ralpha = alpha - 580;
         Value v = qsearch<NonPV, false>(pos, ss, ralpha, ralpha+1);
         if (v <= ralpha)
             return v;
