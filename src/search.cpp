@@ -675,7 +675,7 @@ namespace {
             return qsearch<NonPV, false>(pos, ss, alpha, alpha+1);
     }
     else if (   !PvNode
-             &&  depth <= 2 * ONE_PLY
+             &&  depth <= 3 * ONE_PLY
              &&  eval + RazorMargin2 <= alpha)
     {
         Value ralpha = alpha - RazorMargin2r;
