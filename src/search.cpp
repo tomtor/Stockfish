@@ -67,9 +67,11 @@ namespace {
   const int SkipPhase[] = { 0, 1, 0, 1, 2, 3, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 6, 7 };
 
   // Razor and futility margins
-  const int RazorMargin1 = 590;
-  const int RazorMargin2 = 604;
+   int RazorMargin1 = 590;
+   int RazorMargin2 = 604;
   Value futility_margin(Depth d) { return Value(150 * d / ONE_PLY); }
+
+  TUNE(RazorMargin1, RazorMargin2);
 
   // Futility and reductions lookup tables, initialized at startup
   int FutilityMoveCounts[2][16]; // [improving][depth]
