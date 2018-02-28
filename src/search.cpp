@@ -68,8 +68,7 @@ namespace {
 
   // Razor and futility margins
   const int RazorMargin1 = 590;
-  const int RazorMargin2 = 614;
-  const int RazorMargin2r = 594;
+  const int RazorMargin2 = 604;
   Value futility_margin(Depth d) { return Value(150 * d / ONE_PLY); }
 
   // Futility and reductions lookup tables, initialized at startup
@@ -691,7 +690,7 @@ namespace {
              &&  depth <= 2 * ONE_PLY
              &&  eval + RazorMargin2 <= alpha)
     {
-        Value ralpha = alpha - RazorMargin2r;
+        Value ralpha = alpha - RazorMargin2;
         Value v = qsearch<NonPV, false>(pos, ss, ralpha, ralpha+1);
         if (v <= ralpha)
             return v;
