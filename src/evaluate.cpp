@@ -178,6 +178,7 @@ namespace {
   const Score TrappedBishopA1H1 = S( 50, 50);
   const Score TrappedRook       = S( 92,  0);
   const Score WeakQueen         = S( 40, 10);
+  const Score PinnedOnQueenRook = S( 20, 10);
   const Score WeakUnopposedPawn = S(  5, 25);
 
 #undef S
@@ -335,7 +336,7 @@ namespace {
             pinned = true;
 
         if (pinned)
-            mob /= 2;
+            score -= PinnedOnQueenRook;
 
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 
