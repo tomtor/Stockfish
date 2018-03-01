@@ -177,7 +177,7 @@ namespace {
   const Score ThreatOnQueen     = S( 42, 21);
   const Score TrappedBishopA1H1 = S( 50, 50);
   const Score TrappedRook       = S( 92,  0);
-  const Score WeakQueen         = S( 30,  0);
+  const Score WeakQueen         = S( 50, 10);
   const Score PinnedOnQueenRook = S( 20, 10);
   const Score WeakUnopposedPawn = S(  5, 25);
 
@@ -336,7 +336,7 @@ namespace {
             pinned = true;
 
         if (pinned)
-            score -= PinnedOnQueenRook;
+            score -= (b1 & pos.pieces(Us, QUEEN)) ? WeakQueen : PinnedOnQueenRook;
 
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 
@@ -400,14 +400,6 @@ namespace {
                 if ((kf < FILE_E) == (file_of(s) < kf))
                     score -= (TrappedRook - make_score(mob * 22, 0)) * (1 + !pos.can_castle(Us));
             }
-        }
-
-        if (Pt == QUEEN)
-        {
-            // Penalty if any relative pin or discovered attack against the queen
-            Bitboard queenPinners;
-            if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners))
-                score -= WeakQueen;
         }
     }
     if (T)
