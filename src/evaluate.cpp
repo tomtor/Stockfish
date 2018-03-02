@@ -333,7 +333,6 @@ namespace {
 
         Bitboard b1, b2;
         if (         Pt == KNIGHT
-            &&       pos.pieces(Us, BISHOP, ROOK)
             &&      (b1= attacks_bb<BISHOP>(s, pos.pieces()) & pos.pieces(Them, BISHOP))
             &&      (b2= attacks_bb<BISHOP>(s, pos.pieces()) & pos.pieces(Us, ROOK))
             &&      (attacks_bb<BISHOP>(lsb(b1), pos.pieces() ^ pos.pieces(Us, KNIGHT)) & lsb(b2)))
