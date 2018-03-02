@@ -177,8 +177,8 @@ namespace {
   const Score ThreatOnQueen     = S( 42, 21);
   const Score TrappedBishopA1H1 = S( 50, 50);
   const Score TrappedRook       = S( 92,  0);
-  const Score WeakQueen         = S( 30,  0);
-  const Score PinnedOnQueenRook = S( 20, 10);
+  const Score WeakQueen         = S( 50, 10);
+  const Score PinnedOnQueenRook = S( 10, 10);
   const Score WeakUnopposedPawn = S(  5, 25);
 
 #undef S
@@ -326,22 +326,18 @@ namespace {
 
         int mob = popcount(b & mobilityArea[Us]);
 
-        Bitboard b1, b2;
-        bool pinned = false;
-        if (         pos.pieces(Us, QUEEN, ROOK)
-            &&       Pt != QUEEN
-            && (   ((b1= attacks_bb<ROOK>(s, pos.pieces()) & pos.pieces(Us, QUEEN)) && (b2= attacks_bb<ROOK>(s, pos.pieces()) & pos.pieces(Them, ROOK)))
-                || ((b1= attacks_bb<BISHOP>(s, pos.pieces()) & pos.pieces(Us, QUEEN, ROOK)) && (b2= attacks_bb<BISHOP>(s, pos.pieces()) & pos.pieces(Them, BISHOP))))
-            &&      (between_bb(lsb(b1), lsb(b2)) & s))
-            pinned = true;
-
-        if (pinned)
-            score -= PinnedOnQueenRook;
-
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 
         // Penalty if the piece is far from the king
         score -= KingProtector[Pt - 2] * distance(s, pos.square<KING>(Us));
+
+        Bitboard b1, b2;
+        if (         pos.pieces(Us, QUEEN, ROOK)
+            &&       Pt == KNIGHT
+            && (   ((b1= attacks_bb<BISHOP>(s, pos.pieces()) & pos.pieces(Us, QUEEN, ROOK)) && (b2= attacks_bb<BISHOP>(s, pos.pieces()) & pos.pieces(Them, BISHOP)))
+                || ((b1= attacks_bb<ROOK>(s, pos.pieces()) & pos.pieces(Us, QUEEN)) && (b2= attacks_bb<ROOK>(s, pos.pieces()) & pos.pieces(Them, ROOK))))
+            &&      (between_bb(lsb(b1), lsb(b2)) & s))
+            score -= PinnedOnQueenRook;
 
         if (Pt == BISHOP || Pt == KNIGHT)
         {
@@ -386,7 +382,7 @@ namespace {
         if (Pt == ROOK)
         {
             // Bonus for aligning rook with with enemy pawns on the same rank/file
-            if (!pinned && relative_rank(Us, s) >= RANK_5)
+            if (relative_rank(Us, s) >= RANK_5)
                 score += RookOnPawn * popcount(pos.pieces(Them, PAWN) & PseudoAttacks[ROOK][s]);
 
             // Bonus for rook on an open or semi-open file
