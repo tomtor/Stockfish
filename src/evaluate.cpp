@@ -23,7 +23,6 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
-#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -338,7 +337,7 @@ namespace {
             &&      (b1= attacks_bb<BISHOP>(s, pos.pieces()) & pos.pieces(Them, BISHOP))
             &&      (b2= attacks_bb<BISHOP>(s, pos.pieces()) & pos.pieces(Us, ROOK))
             &&      (attacks_bb<BISHOP>(lsb(b1), pos.pieces() ^ pos.pieces(Us, KNIGHT)) & lsb(b2)))
-            score -= KnightPinnedOnRook, std::cout << pos << '\n';
+            score -= KnightPinnedOnRook;
 
         if (Pt == BISHOP || Pt == KNIGHT)
         {
