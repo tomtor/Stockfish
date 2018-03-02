@@ -178,7 +178,7 @@ namespace {
   const Score TrappedBishopA1H1 = S( 50, 50);
   const Score TrappedRook       = S( 92,  0);
   const Score WeakQueen         = S( 50, 10);
-  const Score PinnedOnQueenRook = S( 10, 10);
+  const Score PinnedOnRook      = S( 15, 10);
   const Score WeakUnopposedPawn = S(  5, 25);
 
 #undef S
@@ -332,12 +332,11 @@ namespace {
         score -= KingProtector[Pt - 2] * distance(s, pos.square<KING>(Us));
 
         Bitboard b1, b2;
-        if (         pos.pieces(Us, QUEEN, ROOK)
-            &&       Pt == KNIGHT
-            && (   ((b1= attacks_bb<BISHOP>(s, pos.pieces()) & pos.pieces(Us, QUEEN, ROOK)) && (b2= attacks_bb<BISHOP>(s, pos.pieces()) & pos.pieces(Them, BISHOP)))
-                || ((b1= attacks_bb<ROOK>(s, pos.pieces()) & pos.pieces(Us, QUEEN)) && (b2= attacks_bb<ROOK>(s, pos.pieces()) & pos.pieces(Them, ROOK))))
+        if (         Pt == KNIGHT
+            &&       pos.pieces(Us, BISHOP, ROOK)
+            &&      (b1= attacks_bb<BISHOP>(s, pos.pieces()) & pos.pieces(Us, ROOK)) && (b2= attacks_bb<BISHOP>(s, pos.pieces()) & pos.pieces(Them, BISHOP))
             &&      (between_bb(lsb(b1), lsb(b2)) & s))
-            score -= PinnedOnQueenRook;
+            score -= PinnedOnRook;
 
         if (Pt == BISHOP || Pt == KNIGHT)
         {
