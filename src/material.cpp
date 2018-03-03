@@ -201,12 +201,12 @@ Entry* probe(const Position& pos) {
   if (!pos.count<PAWN>(WHITE) && npm_w - npm_b <= BishopValueMg)
       e->factor[WHITE] = uint8_t(npm_w <  RookValueMg   ? SCALE_FACTOR_DRAW :
                                  npm_b <= BishopValueMg ? 4 :
-                                 npm_b <= 2 * RookValueMg ? 8 : 14);
+                                 npm_b <= 2 * RookValueMg ? 10 : 14);
 
   if (!pos.count<PAWN>(BLACK) && npm_b - npm_w <= BishopValueMg)
       e->factor[BLACK] = uint8_t(npm_b <  RookValueMg   ? SCALE_FACTOR_DRAW :
                                  npm_w <= BishopValueMg ? 4 :
-                                 npm_w <= 2 * RookValueMg ? 8 : 14);
+                                 npm_w <= 2 * RookValueMg ? 10 : 14);
 
   if (pos.count<PAWN>(WHITE) == 1 && npm_w - npm_b <= BishopValueMg)
       e->factor[WHITE] = (uint8_t) SCALE_FACTOR_ONEPAWN;
