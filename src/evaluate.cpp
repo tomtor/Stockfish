@@ -325,7 +325,7 @@ namespace {
 
         int mob = popcount(b & mobilityArea[Us]);
 
-        mob -= pos.count<ALL_PIECES>(Us) - pos.count<PAWN>(Us) < pos.count<ALL_PIECES>(Them) - pos.count<PAWN>(Them);
+        mob = std::max(0, mob - (pos.count<ALL_PIECES>(Us) - pos.count<PAWN>(Us) < pos.count<ALL_PIECES>(Them) - pos.count<PAWN>(Them)));
 
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 
