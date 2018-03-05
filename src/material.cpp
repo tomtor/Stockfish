@@ -200,11 +200,11 @@ Entry* probe(const Position& pos) {
   // drawish scale factor for cases such as KRKBP and KmmKm (except for KBBKN).
   if (!pos.count<PAWN>(WHITE) && npm_w - npm_b <= BishopValueMg)
       e->factor[WHITE] = uint8_t(npm_w <  RookValueMg   ? SCALE_FACTOR_DRAW :
-                                 npm_b <= BishopValueMg ? 4 : 7);
+                                 npm_b <= BishopValueMg ? 7 : 10);
 
   if (!pos.count<PAWN>(BLACK) && npm_b - npm_w <= BishopValueMg)
       e->factor[BLACK] = uint8_t(npm_b <  RookValueMg   ? SCALE_FACTOR_DRAW :
-                                 npm_w <= BishopValueMg ? 4 : 7);
+                                 npm_w <= BishopValueMg ? 7 : 10);
 
   if (pos.count<PAWN>(WHITE) == 1 && npm_w - npm_b <= BishopValueMg)
       e->factor[WHITE] = (uint8_t) SCALE_FACTOR_ONEPAWN;
