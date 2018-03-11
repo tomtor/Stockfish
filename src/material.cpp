@@ -212,6 +212,12 @@ Entry* probe(const Position& pos) {
   if (pos.count<PAWN>(BLACK) == 1 && npm_b - npm_w <= BishopValueMg)
       e->factor[BLACK] = (uint8_t) SCALE_FACTOR_ONEPAWN;
 
+  // Balanced rooks tend to be drawish
+  if (    e->factor[WHITE] == SCALE_FACTOR_NORMAL && e->factor[BLACK] == SCALE_FACTOR_NORMAL
+      && !pos.count<BISHOP>() && !pos.count<KNIGHT>() && !pos.count<QUEEN>()
+      &&  pos.count<ROOK>() && pos.count<ROOK>(WHITE) == pos.count<ROOK>(BLACK))
+      e->factor[WHITE] = e->factor[BLACK] = (uint8_t) 56;
+
   // Evaluate the material imbalance. We use PIECE_TYPE_NONE as a place holder
   // for the bishop pair "extended piece", which allows us to be more flexible
   // in defining bishop pair bonuses.

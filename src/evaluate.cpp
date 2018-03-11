@@ -805,13 +805,6 @@ namespace {
             else
                 sf = 46;
         }
-        // Balanced rooks tend to be drawish
-        else if (   !pos.count<BISHOP>()
-                 && !pos.count<KNIGHT>()
-                 && !pos.count<QUEEN>()
-                 &&  pos.count<ROOK>() && pos.count<ROOK>(WHITE) == pos.count<ROOK>(BLACK)
-                 &&  sf == SCALE_FACTOR_NORMAL)
-             sf = 61;
         // Endings where weaker side can place his king in front of the enemy's
         // pawns are drawish.
         else if (    abs(eg) <= BishopValueEg
