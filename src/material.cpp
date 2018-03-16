@@ -216,7 +216,7 @@ Entry* probe(const Position& pos) {
   if (    e->factor[WHITE] == SCALE_FACTOR_NORMAL && e->factor[BLACK] == SCALE_FACTOR_NORMAL
       && !pos.count<BISHOP>() && !pos.count<KNIGHT>() && !pos.count<QUEEN>()
       &&  pos.count<ROOK>() && pos.count<ROOK>(WHITE) == pos.count<ROOK>(BLACK))
-      e->factor[WHITE] = e->factor[BLACK] = (uint8_t) 58;
+      e->factor[WHITE] = e->factor[BLACK] = (uint8_t) 54;
 
   // Evaluate the material imbalance. We use PIECE_TYPE_NONE as a place holder
   // for the bishop pair "extended piece", which allows us to be more flexible
