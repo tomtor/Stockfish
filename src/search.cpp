@@ -967,15 +967,15 @@ moves_loop: // When in check, search starts from here
               if ((ss-1)->moveCount > 15)
                   r -= ONE_PLY;
 
-#if 0
               // Decrease reduction for exact PV nodes
               if (pvExact)
                   r -= ONE_PLY;
-#endif
 
+#if 0
               // Increase reduction if ttMove is a capture
               if (ttCapture)
                   r += ONE_PLY;
+#endif
 
               // Increase reduction for cut nodes
               if (cutNode)
