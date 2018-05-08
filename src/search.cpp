@@ -720,7 +720,7 @@ namespace {
     int rzm;
     if (  !PvNode
         && depth < 3 * ONE_PLY
-        && eval <= alpha - (rzm= RazorMargin[depth / ONE_PLY] + PieceValue[EG][pos.captured_piece()]))
+        && eval <= alpha - (rzm= RazorMargin[depth / ONE_PLY] + PieceValue[EG][pos.captured_piece()])/2)
     {
         Value ralpha = alpha - (depth >= 2 * ONE_PLY) * rzm;
         Value v = qsearch<NonPV>(pos, ss, ralpha, ralpha+1);
