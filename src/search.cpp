@@ -1006,7 +1006,7 @@ moves_loop: // When in check, search starts from here
           else
           {
               // Decrease reduction if opponent's move count is high (~5 Elo)
-              if ((ss-1)->moveCount > 15 + pos.count<QUEEN>() / 2)
+              if ((ss-1)->moveCount > 14 + 4 * pos.non_pawn_material(us) / (QueenValueMg+RookValueMg+BishopValueMg+KnightValueMg))
                   r -= ONE_PLY;
 
               // Decrease reduction for exact PV nodes (~0 Elo)
