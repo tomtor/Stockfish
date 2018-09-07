@@ -1011,6 +1011,10 @@ moves_loop: // When in check, search starts from here
               if (pvExact)
                   r -= ONE_PLY;
 
+              // Decrease reduction for improving moves
+              if (improving && ss->ply < depth / 4)
+                  r -= ONE_PLY;
+
               // Increase reduction if ttMove is a capture (~0 Elo)
               if (ttCapture)
                   r += ONE_PLY;
