@@ -537,6 +537,9 @@ namespace {
     b = pos.pieces(Us, PAWN) & safe;
     b = pawn_attacks_bb<Us>(b) & nonPawnEnemies;
     score += ThreatBySafePawn * popcount(b);
+    // Additional bonus for attacking bishops/knights
+    if (b & pos.pieces(Them, BISHOP, KNIGHT))
+        score += ThreatBySafePawn / 2;
 
     // Find squares where our pawns can push on the next move
     b  = shift<Up>(pos.pieces(Us, PAWN)) & ~pos.pieces();
