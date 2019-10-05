@@ -143,7 +143,7 @@ namespace {
   constexpr Score SliderOnQueen      = S( 59, 18);
   constexpr Score ThreatByKing       = S( 24, 89);
   constexpr Score ThreatByPawnPush   = S( 48, 39);
-  constexpr Score ThreatBySafePawn   = S(173, 94);
+  constexpr Score ThreatBySafePawn   = S(173-20, 94-20);
   constexpr Score TrappedRook        = S( 47,  4);
   constexpr Score WeakQueen          = S( 49, 15);
 
@@ -539,7 +539,7 @@ namespace {
     score += ThreatBySafePawn * popcount(b);
     // Additional bonus for attacking bishops/knights
     if (b & pos.pieces(Them, BISHOP, KNIGHT))
-        score += ThreatBySafePawn / 2;
+        score += make_score(40, 40);
 
     // Find squares where our pawns can push on the next move
     b  = shift<Up>(pos.pieces(Us, PAWN)) & ~pos.pieces();
