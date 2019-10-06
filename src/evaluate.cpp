@@ -509,9 +509,9 @@ namespace {
     {
         b = (defended | weak) & (attackedBy[Us][KNIGHT] | attackedBy[Us][BISHOP]);
         while (b) {
-            score += ThreatByMinor[type_of(pos.piece_on(pop_lsb(&b)))];
             if (b & weak & attackedBy[Them][QUEEN])
                 score += make_score(25, 25);
+            score += ThreatByMinor[type_of(pos.piece_on(pop_lsb(&b)))];
         }
 
         b = weak & attackedBy[Us][ROOK];
