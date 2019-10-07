@@ -138,6 +138,7 @@ namespace {
   constexpr Score Outpost            = S( 16,  5);
   constexpr Score PassedFile         = S( 11,  8);
   constexpr Score PawnlessFlank      = S( 17, 95);
+  constexpr Score QueenDefends       = S( 15, 15);
   constexpr Score RestrictedPiece    = S(  7,  7);
   constexpr Score RookOnQueenFile    = S(  7,  6);
   constexpr Score SliderOnQueen      = S( 59, 18);
@@ -508,7 +509,7 @@ namespace {
     if (defended | weak)
     {
         b = (defended | weak) & (attackedBy[Us][KNIGHT] | attackedBy[Us][BISHOP]);
-        score += make_score(15, 15) * popcount(b & weak & attackedBy[Them][QUEEN]);
+        score += QueenDefends * popcount(b & weak & attackedBy[Them][QUEEN]);
         while (b)
             score += ThreatByMinor[type_of(pos.piece_on(pop_lsb(&b)))];
 
