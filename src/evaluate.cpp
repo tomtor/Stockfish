@@ -113,7 +113,7 @@ namespace {
   // ThreatByMinor/ByRook[attacked PieceType] contains bonuses according to
   // which piece type attacks which one. Attacks on lesser pieces which are
   // pawn-defended are not considered.
-  constexpr Score ThreatByMinor[PIECE_TYPE_NB] = {
+  Score ThreatByMinor[PIECE_TYPE_NB] = {
     S(0, 0), S(6, 32), S(59, 41), S(79, 56), S(90, 119), S(79, 161)
   };
 
@@ -130,7 +130,7 @@ namespace {
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score FlankAttacks       = S(  8,  0);
-  constexpr Score Hanging            = S( 69, 36);
+  Score Hanging            = S( 69, 36);
   constexpr Score KingProtector      = S(  7,  8);
   constexpr Score KnightOnQueen      = S( 16, 12);
   constexpr Score LongDiagonalBishop = S( 45,  0);
@@ -138,7 +138,7 @@ namespace {
   constexpr Score Outpost            = S( 16,  5);
   constexpr Score PassedFile         = S( 11,  8);
   constexpr Score PawnlessFlank      = S( 17, 95);
-  constexpr Score QueenDefends       = S( 15, 15);
+  Score QueenDefends       = S( 15, 15);
   constexpr Score RestrictedPiece    = S(  7,  7);
   constexpr Score RookOnQueenFile    = S(  7,  6);
   constexpr Score SliderOnQueen      = S( 59, 18);
@@ -149,6 +149,8 @@ namespace {
   constexpr Score WeakQueen          = S( 49, 15);
 
 #undef S
+
+TUNE(QueenDefends, Hanging, ThreatByMinor[1], ThreatByMinor[2], ThreatByMinor[3], ThreatByMinor[4], ThreatByMinor[5]);
 
   // Evaluation class computes and stores attacks tables and other working data
   template<Tracing T>
