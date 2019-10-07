@@ -114,7 +114,7 @@ namespace {
   // which piece type attacks which one. Attacks on lesser pieces which are
   // pawn-defended are not considered.
   constexpr Score ThreatByMinor[PIECE_TYPE_NB] = {
-    S(0, 0), S(6, 32), S(59, 41), S(79, 56), S(90, 119), S(79, 161)
+    S(0, 0), S(6, 29), S(56, 40), S(74, 55), S(92, 119), S(85, 157)
   };
 
   constexpr Score ThreatByRook[PIECE_TYPE_NB] = {
@@ -130,7 +130,7 @@ namespace {
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score FlankAttacks       = S(  8,  0);
-  constexpr Score Hanging            = S( 69, 36);
+  constexpr Score Hanging            = S( 75, 34);
   constexpr Score KingProtector      = S(  7,  8);
   constexpr Score KnightOnQueen      = S( 16, 12);
   constexpr Score LongDiagonalBishop = S( 45,  0);
@@ -138,7 +138,7 @@ namespace {
   constexpr Score Outpost            = S( 16,  5);
   constexpr Score PassedFile         = S( 11,  8);
   constexpr Score PawnlessFlank      = S( 17, 95);
-  constexpr Score QueenDefends       = S( 15, 15);
+  constexpr Score QueenDefends       = S( 16, 15);
   constexpr Score RestrictedPiece    = S(  7,  7);
   constexpr Score RookOnQueenFile    = S(  7,  6);
   constexpr Score SliderOnQueen      = S( 59, 18);
