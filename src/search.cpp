@@ -1083,7 +1083,7 @@ moves_loop: // When in check, search starts from here
               || ss->staticEval + PieceValue[EG][pos.captured_piece()] <= alpha
               || cutNode))
       {
-          Depth r = reduction(improving, depth + (type_of(movedPiece) == KNIGHT), moveCount);
+          Depth r = reduction(improving, depth, moveCount - (type_of(movedPiece) == KNIGHT));
 
           // Reduction if other threads are searching this position.
           if (th.marked())
