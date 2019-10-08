@@ -1105,6 +1105,10 @@ moves_loop: // When in check, search starts from here
               // Increase reduction if ttMove is a capture (~0 Elo)
               if (ttCapture)
                   r++;
+            
+              // Reduce knight moves less
+              if (type_of(pos.moved_piece(move)) == KNIGHT)
+                  r--;
 
               // Increase reduction for cut nodes (~5 Elo)
               if (cutNode)
