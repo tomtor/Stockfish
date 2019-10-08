@@ -1070,6 +1070,8 @@ moves_loop: // When in check, search starts from here
       ss->currentMove = move;
       ss->continuationHistory = &thisThread->continuationHistory[priorCapture][movedPiece][to_sq(move)];
 
+      bool knightMove = (type_of(pos.moved_piece(move)) == KNIGHT);
+
       // Step 15. Make the move
       pos.do_move(move, st, givesCheck);
 
@@ -1107,7 +1109,7 @@ moves_loop: // When in check, search starts from here
                   r++;
             
               // Reduce knight moves less
-              if (type_of(pos.moved_piece(move)) == KNIGHT)
+              if (knightMove)
                   r--;
 
               // Increase reduction for cut nodes (~5 Elo)
