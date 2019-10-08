@@ -1083,7 +1083,7 @@ moves_loop: // When in check, search starts from here
               || ss->staticEval + PieceValue[EG][pos.captured_piece()] <= alpha
               || cutNode))
       {
-          Depth r = reduction(improving, depth, moveCount);
+          Depth r = reduction(improving, depth + (type_of(movedPiece) == KNIGHT), moveCount);
 
           // Reduction if other threads are searching this position.
           if (th.marked())
@@ -1116,10 +1116,6 @@ moves_loop: // When in check, search starts from here
               else if (    type_of(move) == NORMAL
                        && !pos.see_ge(reverse_move(move)))
                   r -= 2;
-                              
-              // Reduce knight moves less
-              else if (type_of(movedPiece) == KNIGHT)
-                  r--;
 
               ss->statScore =  thisThread->mainHistory[us][from_to(move)]
                              + (*contHist[0])[movedPiece][to_sq(move)]
