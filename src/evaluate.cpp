@@ -680,14 +680,13 @@ namespace {
                    & ~pos.pieces(Us, PAWN)
                    & ~attackedBy[Them][PAWN];
 
-    // Find all squares which are at most three squares behind some friendly pawn
-    Bitboard behind = pos.pieces(Us, PAWN);
+    // Find all squares which are at most two squares behind some friendly pawn
+    Bitboard behind = shift<Down>(pos.pieces(Us, PAWN));
     behind |= shift<Down>(behind);
-    behind |= shift<Down+Down>(behind);
 
-    int bonus = 3 * popcount(safe) + 2 * popcount(behind & safe & ~attackedBy[Them][ALL_PIECES]);
+    int bonus = popcount(safe) + (3 * popcount(behind & safe & ~attackedBy[Them][ALL_PIECES]) / 2);
     int weight = pos.count<ALL_PIECES>(Us) - 1;
-    Score score = make_score(bonus * weight * weight / 80, 0);
+    Score score = make_score(bonus * weight * weight / 16, 0);
 
     if (T)
         Trace::add(SPACE, Us, score);
