@@ -471,6 +471,14 @@ namespace {
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttacks;
 
+    // King opposition
+    if (  !pos.non_pawn_material(Them)
+        && distance<Square>(ksq, pos.square<KING>(Them)) == 2) {
+            Bitboard bp= (Them == WHITE ? shift<NORTH> : shift<SOUTH>)(pos.pieces(Them, PAWN));
+            if ((bp & pos.pieces()) == bp)
+                score += (pos.side_to_move() == Us ? make_score(0, 8) : make_score(0, -8));
+    }
+
     if (T)
         Trace::add(KING, Us, score);
 
