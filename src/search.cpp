@@ -967,7 +967,7 @@ moves_loop: // When in check, search starts from here
 
       // Step 13. Pruning at shallow depth (~170 Elo)
       if (  !rootNode
-          && (pos.non_pawn_material(us) || ss->staticEval > 200)
+          && pos.non_pawn_material(us)
           && bestValue > VALUE_MATED_IN_MAX_PLY)
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
@@ -988,6 +988,7 @@ moves_loop: // When in check, search starts from here
               // Futility pruning: parent node (~2 Elo)
               if (   lmrDepth < 6
                   && !inCheck
+                  && pos.non_pawn_material(us) > KnightValueMg
                   && ss->staticEval + 250 + 211 * lmrDepth <= alpha)
                   continue;
 
