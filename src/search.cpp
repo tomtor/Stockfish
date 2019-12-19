@@ -429,7 +429,7 @@ void Thread::search() {
           {
               Value previousScore = rootMoves[pvIdx].previousScore;
               delta = Value(19 + abs(previousScore) / 128);
-	      if (previousScore == VALUE_DRAW)
+	      if (abs(previousScore) <= 1)
 		      delta = Value(23);
               alpha = std::max(previousScore - delta,-VALUE_INFINITE);
               beta  = std::min(previousScore + delta, VALUE_INFINITE);
